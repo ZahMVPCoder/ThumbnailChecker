@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThumbnailChecker Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { background: #fff7f0; margin: 0; font-family: 'Nunito', 'Roboto', Arial, sans-serif; }
+    .preview-header { text-align: center; margin: 32px 0 18px 0; }
+    .preview-header h1 { font-size: 2.2rem; font-weight: 900; color: #222; margin-bottom: 0.3em; }
+    .preview-header p { color: #666; font-size: 1.1rem; }
+    .platform-grid { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; margin: 32px 0; }
+    .preview-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 32px rgba(0,0,0,0.07); padding: 24px 24px 18px 24px; min-width: 340px; max-width: 420px; flex: 1 1 340px; }
+    .card-label { font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+    .platform-badge { background: #ff5c5c; color: #fff; border-radius: 6px; padding: 2px 12px; font-size: 0.95em; font-weight: 800; margin-right: 6px; }
+    .yt-thumb-wrap, .yt-sr-thumb, .yt-sb-thumb, .mobile-thumb-wrap, .embed-player { background: #111; border-radius: 12px; overflow: hidden; position: relative; }
+    .yt-thumb-wrap img, .yt-sr-thumb img, .yt-sb-thumb img, .mobile-thumb-wrap img, .embed-player img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .yt-thumb-wrap { width: 320px; height: 180px; margin-bottom: 10px; }
+    .yt-sr-thumb { width: 180px; height: 100px; float: left; margin-right: 14px; }
+    .yt-sb-thumb { width: 120px; height: 68px; float: left; margin-right: 10px; }
+    .mobile-thumb-wrap { width: 220px; height: 124px; margin: 0 auto 10px auto; }
+    .embed-player { width: 320px; height: 180px; margin: 0 auto 10px auto; }
+    .yt-title, .yt-sr-title, .yt-sb-title, .mobile-title, .embed-title { font-weight: 800; font-size: 1.1em; margin: 8px 0 4px 0; color: #222; }
+    .yt-meta, .yt-sr-meta, .yt-sb-meta, .mobile-meta, .embed-meta { color: #666; font-size: 0.97em; }
+    @media (max-width: 900px) { .platform-grid { flex-direction: column; align-items: center; } }
+  </style>
+</head>
+<body>
+  <div class="preview-header">
+    <h1>Your Thumbnail on <span style="color:#ff5c5c">Every Platform</span></h1>
+    <p>See exactly how your content appears everywhere YouTube lives</p>
+  </div>
+  <div class="platform-grid">
+    <!-- Desktop Home -->
+    <div class="preview-card">
+      <div class="card-label"><span class="platform-badge">DESKTOP</span>Home Feed</div>
+      <div class="yt-thumb-wrap"><img id="dh-thumb" src="" alt=""></div>
+      <div class="yt-title" id="dh-title"></div>
+      <div class="yt-meta">Your Channel • 1.2K views</div>
+    </div>
+    <!-- Desktop Search -->
+    <div class="preview-card">
+      <div class="card-label"><span class="platform-badge">DESKTOP</span>Search Results</div>
+      <div class="yt-sr-thumb"><img id="sr-thumb" src="" alt=""></div>
+      <div class="yt-sr-title" id="sr-title"></div>
+      <div class="yt-sr-meta">Your Channel • 1,234 views • 2 days ago</div>
+      <div style="clear:both"></div>
+    </div>
+    <!-- Desktop Sidebar -->
+    <div class="preview-card">
+      <div class="card-label"><span class="platform-badge">DESKTOP</span>Watch Next Sidebar</div>
+      <div class="yt-sb-thumb"><img id="sb-thumb" src="" alt=""></div>
+      <div class="yt-sb-title" id="sb-title"></div>
+      <div class="yt-sb-meta">Your Channel • 1,234 views</div>
+      <div style="clear:both"></div>
+    </div>
+    <!-- Mobile Home -->
+    <div class="preview-card">
+      <div class="card-label"><span class="platform-badge">MOBILE</span>YouTube App — Home</div>
+      <div class="mobile-thumb-wrap"><img id="mob-thumb" src="" alt=""></div>
+      <div class="mobile-title" id="mob-title"></div>
+      <div class="mobile-meta">Your Channel • 1.2K views • 2d ago</div>
+    </div>
+    <!-- Embed -->
+    <div class="preview-card">
+      <div class="card-label"><span class="platform-badge">EMBED</span>Website / Blog Embed</div>
+      <div class="embed-player"><img id="embed-thumb" src="" alt=""></div>
+      <div class="embed-title" id="embed-title"></div>
+      <div class="embed-meta">Your Channel</div>
+    </div>
+  </div>
+  <script>
+    // Load data from sessionStorage
+    const thumbDataURL = sessionStorage.getItem('thumbDataURL');
+    const videoTitle = sessionStorage.getItem('videoTitle');
+    // Set images
+    document.getElementById('dh-thumb').src = thumbDataURL;
+    document.getElementById('sr-thumb').src = thumbDataURL;
+    document.getElementById('sb-thumb').src = thumbDataURL;
+    document.getElementById('mob-thumb').src = thumbDataURL;
+    document.getElementById('embed-thumb').src = thumbDataURL;
+    // Set titles
+    document.getElementById('dh-title').textContent = videoTitle;
+    document.getElementById('sr-title').textContent = videoTitle;
+    document.getElementById('sb-title').textContent = videoTitle;
+    document.getElementById('mob-title').textContent = videoTitle;
+    document.getElementById('embed-title').textContent = videoTitle;
+  </script>
+</body>
+</html>

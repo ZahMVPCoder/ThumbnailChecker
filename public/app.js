@@ -98,14 +98,14 @@ function updateSearchDisplays() {
 
 previewBtn.addEventListener('click', () => {
   if (!thumbDataURL && !currentTitle) {
-    alert('Please upload a thumbnail or enter a title first!');
+    alert('Please upload a thumbnail and enter a title first!');
     return;
   }
-  updatePreviews();
-  previewSection.style.display = 'block';
-  setTimeout(() => {
-    previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 100);
+  // Save data to sessionStorage
+  sessionStorage.setItem('thumbDataURL', thumbDataURL);
+  sessionStorage.setItem('videoTitle', currentTitle);
+  // Redirect to preview page
+  window.location.href = 'preview.html';
 });
 
 // =============================================
