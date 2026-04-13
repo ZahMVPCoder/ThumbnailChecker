@@ -6,6 +6,64 @@
   <title>ThumbnailChecker — See Your Thumbnail Everywhere</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+
+<style>
+  .info-dropdown-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin: 16px 0 0 0;
+    position: relative;
+    z-index: 10;
+  }
+  .info-dropdown-btn {
+    background: #222;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: background 0.2s;
+  }
+  .info-dropdown-btn:hover {
+    background: #444;
+  }
+  .info-dropdown-content {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: #fff;
+    color: #222;
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+    padding: 20px 28px 20px 20px;
+    min-width: 320px;
+    max-width: 90vw;
+    font-size: 1rem;
+    z-index: 100;
+    border: 1px solid #eee;
+  }
+  .info-dropdown-content h2 {
+    margin-top: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .info-dropdown-content ul {
+    margin: 0 0 0 18px;
+    padding: 0;
+    font-size: 1rem;
+  }
+  .info-dropdown-content li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+</style>
 </head>
 <body>
 
@@ -16,6 +74,20 @@
   </div>
   <p>See exactly how your thumbnail & title appear across every YouTube platform</p>
 </header>
+
+<div class="info-dropdown-wrap">
+  <button id="infoDropdownBtn" class="info-dropdown-btn">What is this?</button>
+  <div id="infoDropdown" class="info-dropdown-content">
+    <h2>ThumbnailChecker</h2>
+    <ul>
+      <li>Preview your YouTube thumbnail and title across all major platforms (desktop, mobile, TV, embeds).</li>
+      <li>See exactly how your video will appear to viewers before you publish.</li>
+      <li>Check if your title is too long for any platform and optimize for best visibility.</li>
+      <li>Instantly spot issues with cropping, scaling, or truncation.</li>
+      <li>Perfect for creators who want to maximize their video’s impact!</li>
+    </ul>
+  </div>
+</div>
 
 <div class="upload-section">
   <div class="drop-zone" id="dropZone">
@@ -280,6 +352,22 @@
   Made with ❤️ for creators &nbsp;·&nbsp; <span>ThumbnailChecker</span>
 </footer>
 
-<script src="../src/app.js"></script>
+<script src="app.js"></script>
+<script>
+  // Info Dropdown Toggle
+  const infoBtn = document.getElementById('infoDropdownBtn');
+  const infoDropdown = document.getElementById('infoDropdown');
+  infoBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = infoDropdown.style.display === 'block';
+    infoDropdown.style.display = isOpen ? 'none' : 'block';
+  });
+  // Close dropdown if clicking outside
+  document.addEventListener('click', (e) => {
+    if (!infoBtn.contains(e.target) && !infoDropdown.contains(e.target)) {
+      infoDropdown.style.display = 'none';
+    }
+  });
+</script>
 </body>
 </html>
