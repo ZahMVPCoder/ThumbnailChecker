@@ -74,19 +74,25 @@
   </div>
   <p>See exactly how your thumbnail & title appear across every YouTube platform</p>
 </header>
+<header id="mainHeader">
+  <div class="logo">
+    <div class="logo-icon">🎯</div>
+    <div class="logo-text">ThumbnailChecker</div>
+  </div>
+  <p>See exactly how your thumbnail & title appear across every YouTube platform</p>
+  <button id="infoDropdownBtn" class="info-dropdown-btn">What is this website?</button>
+</header>
 
 <div class="info-dropdown-wrap">
-  <button id="infoDropdownBtn" class="info-dropdown-btn">What is this?</button>
-  <div id="infoDropdown" class="info-dropdown-content">
-    <h2>ThumbnailChecker</h2>
-    <ul>
-      <li>Preview your YouTube thumbnail and title across all major platforms (desktop, mobile, TV, embeds).</li>
-      <li>See exactly how your video will appear to viewers before you publish.</li>
-      <li>Check if your title is too long for any platform and optimize for best visibility.</li>
-      <li>Instantly spot issues with cropping, scaling, or truncation.</li>
-      <li>Perfect for creators who want to maximize their video’s impact!</li>
-    </ul>
-  </div>
+<div id="infoDropdown" class="info-dropdown-content">
+  <h2>ThumbnailChecker</h2>
+  <ul>
+    <li>Preview your YouTube thumbnail and title across all major platforms (desktop, mobile, TV, embeds).</li>
+    <li>See exactly how your video will appear to viewers before you publish.</li>
+    <li>Check if your title is too long for any platform and optimize for best visibility.</li>
+    <li>Instantly spot issues with cropping, scaling, or truncation.</li>
+    <li>Perfect for creators who want to maximize their video’s impact!</li>
+  </ul>
 </div>
 
 <div class="upload-section">
@@ -120,61 +126,73 @@
     <!-- DESKTOP HOME FEED -->
     <div class="preview-card">
       <div class="card-label">
-        <span class="platform-badge">Desktop</span>
-        <span class="card-label-text">YouTube Home Feed</span>
-        <span class="card-label-sub">1280px+</span>
-      </div>
-      <div class="yt-desktop-home">
-        <div class="yt-dh-grid">
-          <div class="yt-dh-item active">
-            <div class="yt-thumb-wrap">
-              <img id="dh-thumb" src="" alt="">
-              <div class="yt-placeholder-thumb" id="dh-ph">🎬</div>
-              <span class="yt-duration">12:34</span>
-            </div>
-            <div class="yt-dh-meta">
-              <div class="yt-avatar"></div>
-              <div class="yt-dh-info">
-                <div class="yt-dh-title" id="dh-title">Your Video Title</div>
-                <div class="yt-dh-channel">Your Channel • 1.2K views</div>
-              </div>
-            </div>
-          </div>
-          <div class="yt-dh-item">
-            <div class="yt-thumb-wrap"><div class="yt-placeholder-thumb" style="background:#2a2a2a;"></div><span class="yt-duration">8:22</span></div>
-            <div class="yt-dh-meta"><div class="yt-avatar" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"></div><div class="yt-dh-info"><div class="yt-dh-title" style="color:#666;">Another Video in the Feed</div><div class="yt-dh-channel">Other Channel</div></div></div>
-          </div>
-          <div class="yt-dh-item">
-            <div class="yt-thumb-wrap"><div class="yt-placeholder-thumb" style="background:#2a2a2a;"></div><span class="yt-duration">24:01</span></div>
-            <div class="yt-dh-meta"><div class="yt-avatar" style="background:linear-gradient(135deg,#fa709a,#fee140)"></div><div class="yt-dh-info"><div class="yt-dh-title" style="color:#666;">Video Title Goes Here Too</div><div class="yt-dh-channel">Another Creator</div></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DESKTOP SEARCH -->
-    <div class="preview-card">
-      <div class="card-label">
-        <span class="platform-badge">Desktop</span>
-        <span class="card-label-text">Search Results</span>
-        <span class="card-label-sub">1280px+</span>
-      </div>
-      <div class="yt-search-bg">
-        <div class="yt-search-bar">
-          <span id="search-query-display">your video topic...</span>
-          <span class="yt-search-icon">🔍</span>
-        </div>
-        <div class="yt-search-result">
-          <div class="yt-sr-thumb">
-            <img id="sr-thumb" src="" alt="">
-            <div class="yt-placeholder-thumb" id="sr-ph">🎬</div>
-            <span class="yt-duration">12:34</span>
-          </div>
-          <div class="yt-sr-info">
-            <div class="yt-sr-title" id="sr-title">Your Video Title</div>
-            <div class="yt-sr-meta">Your Channel &nbsp;·&nbsp; 1,234 views &nbsp;·&nbsp; 2 days ago</div>
-            <div class="yt-sr-desc">This is where your video description appears in search results. Make sure your first few lines are compelling...</div>
-          </div>
+        .info-dropdown-btn {
+          background: #222;
+          color: #fff;
+          border: none;
+          padding: 8px 18px;
+          border-radius: 6px;
+          font-size: 1rem;
+          cursor: pointer;
+          font-weight: 600;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+          transition: background 0.2s;
+          position: absolute;
+          top: 24px;
+          right: 32px;
+          z-index: 30;
+        }
+        .info-dropdown-btn:hover {
+          background: #444;
+        }
+        .info-dropdown-content {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 50%;
+          transform: translate(-50%, -30%) scale(0.95);
+          background: #fff;
+          color: #222;
+          border-radius: 14px;
+          box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+          padding: 32px 36px 28px 32px;
+          min-width: 340px;
+          max-width: 95vw;
+          font-size: 1.08rem;
+          z-index: 1001;
+          border: 1px solid #eee;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.35s cubic-bezier(.4,2,.6,1), transform 0.35s cubic-bezier(.4,2,.6,1);
+          text-align: left;
+        }
+        .info-dropdown-content.open {
+          display: block;
+          opacity: 1;
+          pointer-events: auto;
+          transform: translate(-50%, 40px) scale(1);
+        }
+        .info-dropdown-content h2 {
+          margin-top: 0;
+          font-size: 1.4rem;
+          font-weight: 800;
+          letter-spacing: 0.5px;
+          margin-bottom: 12px;
+          text-align: left;
+        }
+        .info-dropdown-content ul {
+          margin: 0 0 0 18px;
+          padding: 0;
+          font-size: 1.08rem;
+        }
+        .info-dropdown-content li {
+          margin-bottom: 10px;
+          line-height: 1.6;
+        }
+        .header-blur {
+          filter: blur(6px) brightness(0.95);
+          transition: filter 0.35s cubic-bezier(.4,2,.6,1);
+        }
         </div>
         <div class="yt-search-result placeholder">
           <div class="yt-sr-thumb" style="background:#222;"></div>
@@ -354,18 +372,26 @@
 
 <script src="app.js"></script>
 <script>
-  // Info Dropdown Toggle
+  // Info Dropdown Toggle with Animation and Header Blur
   const infoBtn = document.getElementById('infoDropdownBtn');
   const infoDropdown = document.getElementById('infoDropdown');
+  const mainHeader = document.getElementById('mainHeader');
   infoBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    const isOpen = infoDropdown.style.display === 'block';
-    infoDropdown.style.display = isOpen ? 'none' : 'block';
+    const isOpen = infoDropdown.classList.contains('open');
+    if (isOpen) {
+      infoDropdown.classList.remove('open');
+      mainHeader.classList.remove('header-blur');
+    } else {
+      infoDropdown.classList.add('open');
+      mainHeader.classList.add('header-blur');
+    }
   });
   // Close dropdown if clicking outside
   document.addEventListener('click', (e) => {
     if (!infoBtn.contains(e.target) && !infoDropdown.contains(e.target)) {
-      infoDropdown.style.display = 'none';
+      infoDropdown.classList.remove('open');
+      mainHeader.classList.remove('header-blur');
     }
   });
 </script>
