@@ -6,48 +6,311 @@
   <title>ThumbnailChecker — See Your Thumbnail Everywhere</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* Insert the full CSS from the Claude version here */
+    body {
+      background: radial-gradient(circle at 80% 80%, #ffe7d6 0%, #fff8f4 60%, #fff7f0 100%);
+      font-family: 'Nunito', 'Roboto', Arial, sans-serif;
+      margin: 0;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+    .main-title {
+      text-align: center;
+      font-size: 2.6rem;
+      font-weight: 900;
+      margin-top: 40px;
+      margin-bottom: 0.2em;
+      letter-spacing: -1px;
+    }
+    .main-title span {
+      color: #ff5c5c;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      font-size: 1.2rem;
+      margin-bottom: 36px;
+      font-weight: 600;
+    }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      max-width: 1300px;
+      margin: 0 auto 36px auto;
+    }
+    @media (max-width: 1100px) {
+      .preview-grid { grid-template-columns: 1fr; }
+    }
+    .preview-card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+      padding: 0 0 32px 0;
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 28px 14px 28px;
+      border-bottom: 1px solid #f2ece7;
+      background: #fff;
+    }
+    .platform-badge {
+      background: #ff5c5c;
+      color: #fff;
+      border-radius: 16px;
+      padding: 6px 18px;
+      font-size: 1.05em;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      margin-right: 6px;
+      text-transform: uppercase;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #222;
+    }
+    .card-sub {
+      margin-left: auto;
+      color: #b3b3c9;
+      font-size: 1.05em;
+      font-weight: 700;
+    }
+    .yt-sim {
+      background: #181818;
+      padding: 24px 18px 18px 18px;
+      border-radius: 0 0 24px 24px;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    /* Home Feed Grid */
+    .yt-feed-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .yt-thumb {
+      background: #222;
+      border-radius: 10px;
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      position: relative;
+      border: 3px solid #ff5c5c;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    .yt-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .yt-duration {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      font-size: 1em;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      z-index: 2;
+    }
+    .yt-feed-meta {
+      display: flex;
+      gap: 16px;
+      margin-top: 10px;
+      align-items: flex-start;
+    }
+    .yt-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7f53ac, #657ced);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .yt-feed-info {
+      flex: 1;
+    }
+    .yt-feed-title {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .yt-feed-channel {
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.98em;
+      color: #b3b3c9;
+    }
+    .yt-feed-placeholder {
+      background: linear-gradient(135deg, #232323, #2a2a2a);
+      border-radius: 10px;
+      aspect-ratio: 16/9;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      font-size: 1.2em;
+      font-weight: 700;
+    }
+    /* Search Results */
+    .yt-search-bar {
+      background: #232323;
+      border-radius: 18px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .yt-search-bar input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.1em;
+      flex: 1;
+      outline: none;
+    }
+    .yt-search-bar .search-icon {
+      color: #b3b3c9;
+      font-size: 1.2em;
+    }
+    .yt-search-result {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .yt-search-thumb {
+      background: #222;
+      border-radius: 10px;
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      position: relative;
+      min-width: 180px;
+      max-width: 240px;
+      border: 3px solid #ff5c5c;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    .yt-search-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .yt-search-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .yt-search-title {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .yt-search-meta {
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.98em;
+      color: #b3b3c9;
+      margin-bottom: 4px;
+    }
+    .yt-search-desc {
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.98em;
+      color: #b3b3c9;
+      margin-bottom: 2px;
+    }
+    .yt-search-placeholder {
+      background: linear-gradient(135deg, #232323, #2a2a2a);
+      border-radius: 10px;
+      height: 60px;
+      margin-bottom: 8px;
+    }
+    /* ...additional CSS for sidebar, mobile, TV, embed, and analysis sections... */
   </style>
 </head>
 <body>
-<header>
-  <div class="logo">
-    <div class="logo-icon">🎯</div>
-    <div class="logo-text">ThumbnailChecker</div>
-  </div>
-  <p>See exactly how your thumbnail & title appear across every YouTube platform</p>
-</header>
-<div class="upload-section">
-  <div class="drop-zone" id="dropZone">
-    <input type="file" id="fileInput" accept="image/*">
-    <div class="drop-placeholder">
-      <span class="drop-icon">🖼️</span>
-      <h2>Drop Your Thumbnail Here</h2>
-      <p>or click to select a file — JPG, PNG, WEBP supported</p>
+  <div class="main-title">Your Thumbnail on <span>Every Platform</span></div>
+  <div class="subtitle">Scroll down to see how your content appears everywhere YouTube lives</div>
+  <div class="preview-grid">
+    <!-- Desktop Home Feed -->
+    <div class="preview-card">
+      <div class="card-header">
+        <span class="platform-badge">DESKTOP</span>
+        <span class="card-title">YouTube Home Feed</span>
+        <span class="card-sub">1280px+</span>
+      </div>
+      <div class="yt-sim">
+        <div class="yt-feed-grid">
+          <div class="yt-thumb"><img src="thumbnail.jpg" alt=""><span class="yt-duration">12:34</span></div>
+          <div class="yt-feed-placeholder"></div>
+          <div class="yt-feed-placeholder"></div>
+        </div>
+        <div class="yt-feed-meta">
+          <div class="yt-avatar"></div>
+          <div class="yt-feed-info">
+            <div class="yt-feed-title">Video title</div>
+            <div class="yt-feed-channel">Your Channel · 1.2K views</div>
+          </div>
+          <div class="yt-feed-info">
+            <div class="yt-feed-title" style="color:#b3b3c9;">Another Video in the Feed</div>
+            <div class="yt-feed-channel">Other Channel</div>
+          </div>
+          <div class="yt-feed-info">
+            <div class="yt-feed-title" style="color:#b3b3c9;">Video Title Goes Here Too</div>
+            <div class="yt-feed-channel">Another Creator</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <img id="thumbPreviewImg" src="" alt="Thumbnail Preview">
-    <div class="change-hint">✏️ Click or drop a new image to change thumbnail</div>
+    <!-- Desktop Search Results -->
+    <div class="preview-card">
+      <div class="card-header">
+        <span class="platform-badge">DESKTOP</span>
+        <span class="card-title">Search Results</span>
+        <span class="card-sub">1280px+</span>
+      </div>
+      <div class="yt-sim">
+        <div class="yt-search-bar">
+          <input type="text" value="Video title" readonly>
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="yt-search-result">
+          <div class="yt-search-thumb"><img src="thumbnail.jpg" alt=""><span class="yt-duration">12:34</span></div>
+          <div class="yt-search-info">
+            <div class="yt-search-title">Video title</div>
+            <div class="yt-search-meta">Your Channel · 1,234 views · 2 days ago</div>
+            <div class="yt-search-desc">This is where your video description appears in search results. Make sure your first few lines are compelling...</div>
+          </div>
+        </div>
+        <div class="yt-search-result">
+          <div class="yt-search-thumb" style="background:#232323;"></div>
+          <div class="yt-search-info">
+            <div class="yt-search-placeholder"></div>
+            <div class="yt-search-placeholder" style="width:60%"></div>
+          </div>
+        </div>
+        <div class="yt-search-result">
+          <div class="yt-search-thumb" style="background:#232323;"></div>
+          <div class="yt-search-info">
+            <div class="yt-search-placeholder"></div>
+            <div class="yt-search-placeholder" style="width:40%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Add more cards for Sidebar, Mobile, TV, Embed, and Analysis as in your screenshots -->
   </div>
-  <div class="title-input-wrap">
-    <label for="videoTitle">VIDEO TITLE</label>
-    <input type="text" id="videoTitle" maxlength="200" placeholder="Enter your video title here…">
-    <span class="char-counter" id="charCounter">0 / 100</span>
-  </div>
-  <button class="cta-btn" id="previewBtn">✨ Preview Across All Platforms</button>
-</div>
-<!-- PREVIEWS -->
-<div id="previewSection">
-  <h2 class="section-title">Your Thumbnail on <span>Every Platform</span></h2>
-  <p class="section-subtitle">Scroll down to see how your content appears everywhere YouTube lives</p>
-  <div class="platform-grid">
-    <!-- Insert all preview cards and sections from the Claude version here -->
-  </div>
-</div>
-<footer>
-  Made with ❤️ for creators &nbsp;·&nbsp; <span>ThumbnailChecker</span>
-</footer>
-<script>
-  // Insert all JS from the Claude version here
-</script>
 </body>
 </html>
