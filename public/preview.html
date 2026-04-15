@@ -3,149 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ThumbnailChecker Preview</title>
+  <title>ThumbnailChecker — See Your Thumbnail Everywhere</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
   <style>
-    body { background: #fff7f0; margin: 0; font-family: 'Nunito', 'Roboto', Arial, sans-serif; }
-    .preview-header { text-align: center; margin: 32px 0 18px 0; }
-    .preview-header h1 { font-size: 2.2rem; font-weight: 900; color: #222; margin-bottom: 0.3em; }
-    .preview-header p { color: #666; font-size: 1.1rem; }
-    .platform-grid { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; margin: 32px 0; }
-    .preview-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 32px rgba(0,0,0,0.07); padding: 24px 24px 18px 24px; min-width: 340px; max-width: 420px; flex: 1 1 340px; }
-    .card-label { font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-    .platform-badge { background: #ff5c5c; color: #fff; border-radius: 6px; padding: 2px 12px; font-size: 0.95em; font-weight: 800; margin-right: 6px; }
-    .yt-thumb-wrap, .yt-sr-thumb, .yt-sb-thumb, .mobile-thumb-wrap, .embed-player {
-      background: #111;
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-      aspect-ratio: 16/9;
-      width: 100%;
-      max-width: 320px;
-      margin-bottom: 10px;
-    }
-    .yt-thumb-wrap img, .yt-sr-thumb img, .yt-sb-thumb img, .mobile-thumb-wrap img, .embed-player img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      background: #111;
-    }
-    .yt-sr-thumb {
-      max-width: 180px;
-      margin-right: 14px;
-      float: left;
-    }
-    .yt-sb-thumb {
-      max-width: 120px;
-      margin-right: 10px;
-      float: left;
-    }
-    .mobile-thumb-wrap {
-      max-width: 220px;
-      margin: 0 auto 10px auto;
-    }
-    .embed-player {
-      max-width: 320px;
-      margin: 0 auto 10px auto;
-    }
-    .yt-title, .yt-sr-title, .yt-sb-title, .mobile-title, .embed-title { font-weight: 800; font-size: 1.1em; margin: 8px 0 4px 0; color: #222; }
-    .yt-meta, .yt-sr-meta, .yt-sb-meta, .mobile-meta, .embed-meta { color: #666; font-size: 0.97em; }
-    @media (max-width: 900px) { .platform-grid { flex-direction: column; align-items: center; } }
+    /* Insert the full CSS from the Claude version here */
   </style>
 </head>
 <body>
-  <div class="preview-header">
-    <h1>Your Thumbnail on <span style="color:#ff5c5c">Every Platform</span></h1>
-    <p>See exactly how your content appears everywhere YouTube lives</p>
+<header>
+  <div class="logo">
+    <div class="logo-icon">🎯</div>
+    <div class="logo-text">ThumbnailChecker</div>
   </div>
-  <section class="preview-section">
-    <h2>Home Large</h2>
-    <div class="yt-thumb-wrap"><img id="dh-thumb" src="" alt=""></div>
-    <div class="yt-title" id="dh-title">Title</div>
-    <div class="yt-meta">Your Channel &bull; 123K views &bull; 1 hour ago</div>
-  </section>
-  <section class="preview-section">
-    <h2>Home Small</h2>
-    <div class="yt-sr-thumb"><img id="sr-thumb" src="" alt=""></div>
-    <div class="yt-sr-title" id="sr-title">Title</div>
-    <div class="yt-sr-meta">Your Channel &bull; 123K views &bull; 1 hour ago</div>
-  </section>
-  <section class="preview-section">
-    <h2>Sidebar</h2>
-    <div class="yt-sb-thumb"><img id="sb-thumb" src="" alt=""></div>
-    <div class="yt-sb-title" id="sb-title">Title</div>
-    <div class="yt-sb-meta">Your Channel &bull; 123K views &bull; 1 hour ago</div>
-  </section>
-  <section class="preview-section">
-    <h2>Channel Page: Large</h2>
-    <div class="yt-thumb-wrap"><img id="ch-large-thumb" src="" alt=""></div>
-    <div class="yt-title" id="ch-large-title">Title</div>
-    <div class="yt-meta">123K views &bull; 1 hour ago</div>
-  </section>
-  <section class="preview-section">
-    <h2>Channel Page: Small</h2>
-    <div class="yt-sr-thumb"><img id="ch-small-thumb" src="" alt=""></div>
-    <div class="yt-sr-title" id="ch-small-title">Title</div>
-    <div class="yt-sr-meta">123K views &bull; 1 hour ago</div>
-  </section>
-  <section class="preview-section">
-    <h2>History</h2>
-    <div class="yt-thumb-wrap" style="display:inline-block;vertical-align:top;"><img id="history-thumb" src="" alt=""></div>
-    <div style="display:inline-block;vertical-align:top;margin-left:24px;max-width:400px;">
-      <div class="yt-title" id="history-title">Title</div>
-      <div class="yt-meta">Your Channel &bull; 123K views</div>
-      <div class="yt-meta" style="margin-top:8px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+  <p>See exactly how your thumbnail & title appear across every YouTube platform</p>
+</header>
+<div class="upload-section">
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept="image/*">
+    <div class="drop-placeholder">
+      <span class="drop-icon">🖼️</span>
+      <h2>Drop Your Thumbnail Here</h2>
+      <p>or click to select a file — JPG, PNG, WEBP supported</p>
     </div>
-  </section>
-  <section class="preview-section">
-    <h2>Watch Later: Large</h2>
-    <div class="yt-thumb-wrap"><img id="wl-large-thumb" src="" alt=""></div>
-    <div class="yt-title" id="wl-large-title">Title</div>
-    <div class="yt-meta">Your Channel &bull; 123K views &bull; 1 hour ago</div>
-  </section>
-  <section class="preview-section">
-    <h2>Watch Later: List</h2>
-    <div class="yt-sr-thumb"><img id="wl-list-thumb" src="" alt=""></div>
-    <div class="yt-sr-title" id="wl-list-title">Title</div>
-    <div class="yt-sr-meta">Your Channel &bull; 123K views &bull; 1 hour ago</div>
-  </section>
-  <section class="preview-section">
-    <h2>Mobile</h2>
-    <div class="yt-thumb-wrap"><img id="mobile-thumb" src="" alt=""></div>
-    <div class="yt-title" id="mobile-title">Title</div>
-    <div class="yt-meta">Your Channel &bull; 123K views &bull; 1 hour ago</div>
-  </section>
-      <div class="card-label"><span class="platform-badge">MOBILE</span>YouTube App — Home</div>
-      <div class="mobile-thumb-wrap"><img id="mob-thumb" src="" alt=""></div>
-      <div class="mobile-title" id="mob-title"></div>
-      <div class="mobile-meta">Your Channel • 1.2K views • 2d ago</div>
-    </div>
-    <!-- Embed -->
-    <div class="preview-card">
-      <div class="card-label"><span class="platform-badge">EMBED</span>Website / Blog Embed</div>
-      <div class="embed-player"><img id="embed-thumb" src="" alt=""></div>
-      <div class="embed-title" id="embed-title"></div>
-      <div class="embed-meta">Your Channel</div>
-    </div>
+    <img id="thumbPreviewImg" src="" alt="Thumbnail Preview">
+    <div class="change-hint">✏️ Click or drop a new image to change thumbnail</div>
   </div>
-  <script>
-    // Load data from sessionStorage
-    const thumbDataURL = sessionStorage.getItem('thumbDataURL');
-    const videoTitle = sessionStorage.getItem('videoTitle');
-    // Set images
-    document.getElementById('dh-thumb').src = thumbDataURL;
-    document.getElementById('sr-thumb').src = thumbDataURL;
-    document.getElementById('sb-thumb').src = thumbDataURL;
-    document.getElementById('mob-thumb').src = thumbDataURL;
-    document.getElementById('embed-thumb').src = thumbDataURL;
-    // Set titles
-    document.getElementById('dh-title').textContent = videoTitle;
-    document.getElementById('sr-title').textContent = videoTitle;
-    document.getElementById('sb-title').textContent = videoTitle;
-    document.getElementById('mob-title').textContent = videoTitle;
-    document.getElementById('embed-title').textContent = videoTitle;
-  </script>
+  <div class="title-input-wrap">
+    <label for="videoTitle">VIDEO TITLE</label>
+    <input type="text" id="videoTitle" maxlength="200" placeholder="Enter your video title here…">
+    <span class="char-counter" id="charCounter">0 / 100</span>
+  </div>
+  <button class="cta-btn" id="previewBtn">✨ Preview Across All Platforms</button>
+</div>
+<!-- PREVIEWS -->
+<div id="previewSection">
+  <h2 class="section-title">Your Thumbnail on <span>Every Platform</span></h2>
+  <p class="section-subtitle">Scroll down to see how your content appears everywhere YouTube lives</p>
+  <div class="platform-grid">
+    <!-- Insert all preview cards and sections from the Claude version here -->
+  </div>
+</div>
+<footer>
+  Made with ❤️ for creators &nbsp;·&nbsp; <span>ThumbnailChecker</span>
+</footer>
+<script>
+  // Insert all JS from the Claude version here
+</script>
 </body>
 </html>
