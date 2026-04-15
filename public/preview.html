@@ -15,13 +15,41 @@
     .preview-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 32px rgba(0,0,0,0.07); padding: 24px 24px 18px 24px; min-width: 340px; max-width: 420px; flex: 1 1 340px; }
     .card-label { font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
     .platform-badge { background: #ff5c5c; color: #fff; border-radius: 6px; padding: 2px 12px; font-size: 0.95em; font-weight: 800; margin-right: 6px; }
-    .yt-thumb-wrap, .yt-sr-thumb, .yt-sb-thumb, .mobile-thumb-wrap, .embed-player { background: #111; border-radius: 12px; overflow: hidden; position: relative; }
-    .yt-thumb-wrap img, .yt-sr-thumb img, .yt-sb-thumb img, .mobile-thumb-wrap img, .embed-player img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .yt-thumb-wrap { width: 320px; height: 180px; margin-bottom: 10px; }
-    .yt-sr-thumb { width: 180px; height: 100px; float: left; margin-right: 14px; }
-    .yt-sb-thumb { width: 120px; height: 68px; float: left; margin-right: 10px; }
-    .mobile-thumb-wrap { width: 220px; height: 124px; margin: 0 auto 10px auto; }
-    .embed-player { width: 320px; height: 180px; margin: 0 auto 10px auto; }
+    .yt-thumb-wrap, .yt-sr-thumb, .yt-sb-thumb, .mobile-thumb-wrap, .embed-player {
+      background: #111;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 16/9;
+      width: 100%;
+      max-width: 320px;
+      margin-bottom: 10px;
+    }
+    .yt-thumb-wrap img, .yt-sr-thumb img, .yt-sb-thumb img, .mobile-thumb-wrap img, .embed-player img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #111;
+    }
+    .yt-sr-thumb {
+      max-width: 180px;
+      margin-right: 14px;
+      float: left;
+    }
+    .yt-sb-thumb {
+      max-width: 120px;
+      margin-right: 10px;
+      float: left;
+    }
+    .mobile-thumb-wrap {
+      max-width: 220px;
+      margin: 0 auto 10px auto;
+    }
+    .embed-player {
+      max-width: 320px;
+      margin: 0 auto 10px auto;
+    }
     .yt-title, .yt-sr-title, .yt-sb-title, .mobile-title, .embed-title { font-weight: 800; font-size: 1.1em; margin: 8px 0 4px 0; color: #222; }
     .yt-meta, .yt-sr-meta, .yt-sb-meta, .mobile-meta, .embed-meta { color: #666; font-size: 0.97em; }
     @media (max-width: 900px) { .platform-grid { flex-direction: column; align-items: center; } }
