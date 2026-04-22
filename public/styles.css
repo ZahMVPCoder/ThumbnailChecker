@@ -549,3 +549,151 @@ footer span {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* ============================= */
+/* 🔥 THUMBNAIL SIMULATION FIXES */
+/* ============================= */
+
+.yt-thumb,
+.yt-search-thumb,
+.yt-sb-thumb,
+.mobile-thumb-wrap,
+.tv-thumb-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.yt-thumb img,
+.yt-search-thumb img,
+.yt-sb-thumb img,
+.mobile-thumb-wrap img,
+.tv-thumb-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Desktop search sizing */
+.yt-search-thumb {
+  width: 240px;
+  min-width: 240px;
+}
+
+/* Mobile sizing */
+.mobile-frame {
+  max-width: 280px;
+}
+
+/* TV sizing */
+.tv-thumb-wrap {
+  width: 100%;
+}
+
+/* Add padding realism */
+.yt-sim {
+  padding: 16px;
+}
+/* ============================= */
+/* 🔥 THUMBNAIL SIMULATION CORE */
+/* ============================= */
+
+/* Universal thumbnail behavior */
+.yt-thumb,
+.yt-search-thumb,
+.yt-sb-thumb,
+.mobile-thumb-wrap,
+.tv-thumb-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+/* Make images behave like YouTube */
+.yt-thumb img,
+.yt-search-thumb img,
+.yt-sb-thumb img,
+.mobile-thumb-wrap img,
+.tv-thumb-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+/* ============================= */
+/* 🖥 DESKTOP HOME (YouTube grid) */
+/* ============================= */
+
+.yt-home-preview {
+  max-width: 420px;
+}
+
+
+/* ============================= */
+/* 🔍 DESKTOP SEARCH */
+/* ============================= */
+
+.yt-search-thumb {
+  width: 240px;
+  min-width: 240px;
+}
+
+
+/* ============================= */
+/* 📺 WATCH NEXT SIDEBAR */
+/* ============================= */
+
+.yt-sb-thumb {
+  width: 120px;
+  min-width: 120px;
+}
+
+
+/* ============================= */
+/* 📱 MOBILE */
+/* ============================= */
+
+.mobile-frame {
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.mobile-thumb-wrap {
+  width: 100%;
+}
+
+
+/* ============================= */
+/* 📺 TV (LIVING ROOM) */
+/* ============================= */
+
+.tv-frame {
+  padding: 20px;
+}
+
+.tv-thumb-wrap {
+  width: 100%;
+  transform: scale(1.15);
+}
+
+
+/* ============================= */
+/* ✨ REALISM IMPROVEMENTS */
+/* ============================= */
+
+.yt-sim {
+  padding: 16px;
+}
+
+.preview-card {
+  padding-bottom: 20px;
+}

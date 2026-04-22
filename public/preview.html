@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="styles.css">
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -143,6 +145,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
+<script>
+  const backBtn = document.getElementById('backBtn');
+  const previewGrid = document.querySelector('.preview-grid');
+  const mainTitle = document.querySelector('.main-title');
+  const subtitle = document.querySelector('.subtitle');
 
+  function showPreview() {
+    previewGrid.style.display = '';
+    mainTitle.style.display = '';
+    subtitle.style.display = '';
+    backBtn.style.display = 'inline-flex';
+  }
+
+  function showUpload() {
+    previewGrid.style.display = 'none';
+    mainTitle.style.display = 'none';
+    subtitle.style.display = 'none';
+    backBtn.style.display = 'none';
+  }
+
+  showPreview();
+
+  // ✅ THIS is the fix
+  backBtn.onclick = () => {
+    window.location.href = "index.html";
+  };
+</script>
 </body>
 </html>
