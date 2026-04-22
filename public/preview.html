@@ -4,33 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ThumbnailChecker — See Your Thumbnail Everywhere</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
   <style>
     body {
       background: radial-gradient(circle at 80% 80%, #ffe7d6 0%, #fff8f4 60%, #fff7f0 100%);
       font-family: 'Nunito', 'Roboto', Arial, sans-serif;
       margin: 0;
       color: #1a1a2e;
-      min-height: 100vh;
     }
+
     .main-title {
       text-align: center;
       font-size: 2.6rem;
       font-weight: 900;
       margin-top: 40px;
-      margin-bottom: 0.2em;
-      letter-spacing: -1px;
     }
+
     .main-title span {
       color: #ff5c5c;
     }
+
     .subtitle {
       text-align: center;
       color: #888;
-      font-size: 1.2rem;
       margin-bottom: 36px;
-      font-weight: 600;
     }
+
     .preview-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -38,312 +39,110 @@
       max-width: 1300px;
       margin: 0 auto 36px auto;
     }
-    @media (max-width: 1100px) {
-      .preview-grid { grid-template-columns: 1fr; }
-    }
+
     .preview-card {
       background: #fff;
       border-radius: 24px;
       box-shadow: 0 4px 32px rgba(0,0,0,0.07);
-      padding: 0 0 32px 0;
       overflow: hidden;
-      margin-bottom: 0;
     }
+
     .card-header {
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 22px 28px 14px 28px;
-      border-bottom: 1px solid #f2ece7;
-      background: #fff;
+      padding: 22px 28px;
+      border-bottom: 1px solid #eee;
     }
+
     .platform-badge {
       background: #ff5c5c;
       color: #fff;
       border-radius: 16px;
       padding: 6px 18px;
-      font-size: 1.05em;
       font-weight: 900;
-      letter-spacing: 0.04em;
-      margin-right: 6px;
-      text-transform: uppercase;
     }
-    .card-title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: #222;
-    }
-    .card-sub {
-      margin-left: auto;
-      color: #b3b3c9;
-      font-size: 1.05em;
-      font-weight: 700;
-    }
+
     .yt-sim {
       background: #181818;
-      padding: 24px 18px 18px 18px;
-      border-radius: 0 0 24px 24px;
-      min-height: 320px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
+      padding: 20px;
     }
-    /* Home Feed Grid */
-    .yt-feed-grid {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-    .yt-thumb {
-      background: #222;
-      border-radius: 10px;
-      overflow: hidden;
-      aspect-ratio: 16/9;
-      position: relative;
-      border: 3px solid #ff5c5c;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-    }
+
     .yt-thumb img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .yt-duration {
-      position: absolute;
-      bottom: 8px;
-      right: 12px;
-      background: rgba(0,0,0,0.85);
-      color: #fff;
-      font-size: 1em;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 4px;
-      z-index: 2;
-    }
-    .yt-feed-meta {
-      display: flex;
-      gap: 16px;
-      margin-top: 10px;
-      align-items: flex-start;
-    }
-    .yt-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #7f53ac, #657ced);
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-    .yt-feed-info {
-      flex: 1;
-    }
-    .yt-feed-title {
-      font-family: 'Roboto', sans-serif;
-      font-size: 1.1em;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 2px;
-    }
-    .yt-feed-channel {
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.98em;
-      color: #b3b3c9;
-    }
-    .yt-feed-placeholder {
-      background: linear-gradient(135deg, #232323, #2a2a2a);
       border-radius: 10px;
-      aspect-ratio: 16/9;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #444;
-      font-size: 1.2em;
-      font-weight: 700;
     }
-    /* Search Results */
-    .yt-search-bar {
-      background: #232323;
-      border-radius: 18px;
-      padding: 12px 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 18px;
+
+    .yt-feed-title, .yt-search-title {
+      color: white;
+      font-weight: bold;
     }
-    .yt-search-bar input {
-      background: transparent;
-      border: none;
-      color: #fff;
-      font-size: 1.1em;
-      flex: 1;
-      outline: none;
-    }
-    .yt-search-bar .search-icon {
-      color: #b3b3c9;
-      font-size: 1.2em;
-    }
-    .yt-search-result {
-      display: flex;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-    .yt-search-thumb {
-      background: #222;
-      border-radius: 10px;
-      overflow: hidden;
-      aspect-ratio: 16/9;
-      position: relative;
-      min-width: 180px;
-      max-width: 240px;
-      border: 3px solid #ff5c5c;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-    }
-    .yt-search-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .yt-search-info {
-      flex: 1;
-      min-width: 0;
-    }
-    .yt-search-title {
-      font-family: 'Roboto', sans-serif;
-      font-size: 1.1em;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 2px;
-    }
-    .yt-search-meta {
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.98em;
-      color: #b3b3c9;
-      margin-bottom: 4px;
-    }
-    .yt-search-desc {
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.98em;
-      color: #b3b3c9;
-      margin-bottom: 2px;
-    }
-    .yt-search-placeholder {
-      background: linear-gradient(135deg, #232323, #2a2a2a);
-      border-radius: 10px;
-      height: 60px;
-      margin-bottom: 8px;
-    }
-    /* ...additional CSS for sidebar, mobile, TV, embed, and analysis sections... */
   </style>
 </head>
+
 <body>
-  <button id="backBtn" style="display:none;position:fixed;top:32px;left:32px;z-index:1000;background:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:1.1em;font-weight:800;box-shadow:0 2px 12px rgba(0,0,0,0.10);cursor:pointer;align-items:center;gap:8px;transition:background 0.2s;">
-    <span style="font-size:1.2em;vertical-align:middle;">←</span> Back
-  </button>
-  <div class="main-title">Your Thumbnail on <span>Every Platform</span></div>
-  <div class="subtitle">Scroll down to see how your content appears everywhere YouTube lives</div>
-  <div class="preview-grid">
-    <!-- Desktop Home Feed -->
-    <div class="preview-card">
-      <div class="card-header">
-        <span class="platform-badge">DESKTOP</span>
-        <span class="card-title">YouTube Home Feed</span>
-        <span class="card-sub">1280px+</span>
-      </div>
-      <section style="max-width: 900px; margin: 48px auto 0 auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 32px rgba(0,0,0,0.07); padding: 36px 32px 28px 32px; text-align: center;">
-        <h2 style="font-size: 1.5rem; font-weight: 900; color: #222; margin-bottom: 12px;">What is this website?</h2>
-        <p style="font-size: 1.08rem; color: #444; max-width: 700px; margin: 0 auto 10px auto;">
-          <strong>ThumbnailChecker</strong> helps YouTube creators get more views by showing exactly how your thumbnail and title will appear across all major YouTube platforms—desktop, mobile, TV, and embeds. You get a true-to-life preview of your content in every context, so you can optimize your design and text for maximum impact. No more guessing or surprises—see what your viewers will see, and make your videos stand out everywhere on YouTube!
-        </p>
-      </section>
-      <div class="yt-sim">
-        <div class="yt-feed-grid">
-          <div class="yt-thumb"><img src="thumbnail.jpg" alt=""><span class="yt-duration">12:34</span></div>
-          <div class="yt-feed-placeholder"></div>
-          <div class="yt-feed-placeholder"></div>
-        </div>
-        <div class="yt-feed-meta">
-          <div class="yt-avatar"></div>
-          <div class="yt-feed-info">
-            <div class="yt-feed-title">Video title</div>
-            <div class="yt-feed-channel">Your Channel · 1.2K views</div>
-          </div>
-          <div class="yt-feed-info">
-            <div class="yt-feed-title" style="color:#b3b3c9;">Another Video in the Feed</div>
-            <div class="yt-feed-channel">Other Channel</div>
-          </div>
-          <div class="yt-feed-info">
-            <div class="yt-feed-title" style="color:#b3b3c9;">Video Title Goes Here Too</div>
-            <div class="yt-feed-channel">Another Creator</div>
-          </div>
-        </div>
-      </div>
+
+<button id="backBtn">← Back</button>
+
+<div class="main-title">Your Thumbnail on <span>Every Platform</span></div>
+<div class="subtitle">Scroll down to see how your content appears everywhere YouTube lives</div>
+
+<div class="preview-grid">
+    <!-- Desktop Home -->
+  <div class="preview-card">
+    <div class="card-header">
+      <span class="platform-badge">DESKTOP</span>
+      <span>YouTube Home</span>
     </div>
-    <!-- Desktop Search Results -->
-    <div class="preview-card">
-      <div class="card-header">
-        <span class="platform-badge">DESKTOP</span>
-        <span class="card-title">Search Results</span>
-        <span class="card-sub">1280px+</span>
+
+    <div class="yt-sim">
+      <div class="yt-thumb">
+        <img src="">
       </div>
-      <div class="yt-sim">
-        <div class="yt-search-bar">
-          <input type="text" value="Video title" readonly>
-          <span class="search-icon">🔍</span>
-        </div>
-        <div class="yt-search-result">
-          <div class="yt-search-thumb"><img src="thumbnail.jpg" alt=""><span class="yt-duration">12:34</span></div>
-          <div class="yt-search-info">
-            <div class="yt-search-title">Video title</div>
-            <div class="yt-search-meta">Your Channel · 1,234 views · 2 days ago</div>
-            <div class="yt-search-desc">This is where your video description appears in search results. Make sure your first few lines are compelling...</div>
-          </div>
-        </div>
-        <div class="yt-search-result">
-          <div class="yt-search-thumb" style="background:#232323;"></div>
-          <div class="yt-search-info">
-            <div class="yt-search-placeholder"></div>
-            <div class="yt-search-placeholder" style="width:60%"></div>
-          </div>
-        </div>
-        <div class="yt-search-result">
-          <div class="yt-search-thumb" style="background:#232323;"></div>
-          <div class="yt-search-info">
-            <div class="yt-search-placeholder"></div>
-            <div class="yt-search-placeholder" style="width:40%"></div>
-          </div>
-        </div>
-      </div>
+
+      <div class="yt-feed-title">Video title</div>
     </div>
-    <!-- Add more cards for Sidebar, Mobile, TV, Embed, and Analysis as in your screenshots -->
   </div>
-</body>
-</html>
+
+  <!-- Search -->
+  <div class="preview-card">
+    <div class="card-header">
+      <span class="platform-badge">DESKTOP</span>
+      <span>Search Results</span>
+    </div>
+
+    <div class="yt-sim">
+      <div class="yt-thumb">
+        <img src="">
+      </div>
+
+      <div class="yt-search-title">Video title</div>
+    </div>
+  </div>
+
+</div>
 <script>
-  // Show/hide back button based on preview visibility
-  const backBtn = document.getElementById('backBtn');
-  const previewGrid = document.querySelector('.preview-grid');
-  const mainTitle = document.querySelector('.main-title');
-  const subtitle = document.querySelector('.subtitle');
-  // Simulate navigation: show preview, hide upload (for demo, always show preview)
-  function showPreview() {
-    previewGrid.style.display = '';
-    mainTitle.style.display = '';
-    subtitle.style.display = '';
-    backBtn.style.display = 'inline-flex';
-  }
-  function showUpload() {
-    previewGrid.style.display = 'none';
-    mainTitle.style.display = 'none';
-    subtitle.style.display = 'none';
-    backBtn.style.display = 'none';
-  }
-  // For demo: always show preview and back button
-  showPreview();
-  backBtn.onclick = showUpload;
+document.addEventListener('DOMContentLoaded', () => {
+
+  const thumb = sessionStorage.getItem('thumbDataURL');
+  const title = sessionStorage.getItem('videoTitle') || 'Your Video Title';
+
+  console.log("Thumbnail:", thumb); // debug
+
+  // Apply thumbnail
+  document.querySelectorAll('img').forEach(img => {
+    if (thumb) {
+      img.src = thumb;
+    }
+  });
+
+  // Apply title
+  document.querySelectorAll('.yt-feed-title, .yt-search-title').forEach(el => {
+    el.textContent = title;
+  });
+
+});
 </script>
+
+</body>
 </html>
