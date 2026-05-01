@@ -46,9 +46,29 @@
         <div class="yt-dh-item"><div class="yt-thumb-wrap"></div></div>
         <div class="yt-dh-item"><div class="yt-thumb-wrap"></div></div>
 
+        <div class="preview-card">
+  <div class="card-header">
+    <span class="platform-badge">WEB</span>
+    <span>Home (Small Grid)</span>
+  </div>
+
+  <div class="yt-home-small">
+    <div class="yt-hs-grid">
+
+      <div class="yt-hs-item">
+        <div class="yt-thumb-wrap">
+          <img id="hs-thumb">
+        </div>
+        <div class="yt-hs-title" id="hs-title"></div>
       </div>
+
+      <div class="yt-hs-item"><div class="yt-thumb-wrap"></div></div>
+      <div class="yt-hs-item"><div class="yt-thumb-wrap"></div></div>
+      <div class="yt-hs-item"><div class="yt-thumb-wrap"></div></div>
+
     </div>
   </div>
+</div>
 
   <!-- SEARCH -->
   <div class="preview-card">
@@ -81,6 +101,45 @@
         <div class="yt-sr-info"></div>
       </div>
 
+  <!-- SIDEBAR  -->
+  <div class="preview-card">
+    <div class="card-header">
+      <span class="platform-badge">WEB</span>
+      <span>Sidebar (Watch Next)</span>
+    </div>
+
+    <div class="yt-sidebar">
+
+      <div class="yt-sb-item">
+        <div class="yt-sb-thumb">
+          <img id="sb-thumb">
+        </div>
+
+        <div class="yt-sb-info">
+          <div id="sb-title"></div>
+          <div class="yt-sb-meta">Your Channel</div>
+        </div>
+      </div>
+
+      <div class="yt-sb-item">
+        <div class="yt-sb-thumb"></div>
+      </div>
+
+ <!-- 🔥 ADD MOBILE HERE -->
+  <div class="preview-card">
+    <div class="card-header">
+      <span class="platform-badge">MOBILE</span>
+      <span>Home (Full Width)</span>
+    </div>
+
+    <div class="yt-mobile">
+
+      <div class="yt-mobile-thumb">
+        <img id="mob-thumb">
+      </div>
+
+      <div id="mob-title"></div>
+
     </div>
   </div>
 
@@ -103,28 +162,88 @@
   </div>
 
 </div>
+
+ <!-- 🔥 ADD LIST LAYOUT HERE -->
+  <div class="preview-card">
+    <div class="card-header">
+      <span class="platform-badge">WEB</span>
+      <span>Channel / History / Watch Later</span>
+    </div>
+
+    <div class="yt-list">
+
+      <div class="yt-list-item">
+        <div class="yt-list-thumb">
+          <img id="list-thumb">
+        </div>
+
+        <div class="yt-list-info">
+          <div id="list-title"></div>
+          <div class="yt-list-meta">Your Channel • 1.2K views</div>
+        </div>
+      </div>
+
+      <!-- fake rows for realism -->
+      <div class="yt-list-item">
+        <div class="yt-list-thumb"></div>
+        <div class="yt-list-info"></div>
+      </div>
+
+      <div class="yt-list-item">
+        <div class="yt-list-thumb"></div>
+        <div class="yt-list-info"></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
   const thumb = sessionStorage.getItem('thumbDataURL');
   const title = sessionStorage.getItem('videoTitle') || 'Your Video Title';
 
-  console.log("Thumbnail:", thumb); // debug
+  console.log("Thumbnail:", thumb);
 
-  // Apply thumbnail
+  // ======================
+  // THUMBNAILS
+  // ======================
   if (thumb) {
-  document.getElementById('dh-thumb').src = thumb;
-  document.getElementById('sr-thumb').src = thumb;
-}
+    const dh = document.getElementById('dh-thumb');
+    const sr = document.getElementById('sr-thumb');
+    const hs = document.getElementById('hs-thumb');
+    const sb = document.getElementById('sb-thumb');
+    const list = document.getElementById('list-thumb');
+    const mob = document.getElementById('mob-thumb');
 
-document.getElementById('dh-title').textContent = title;
-document.getElementById('sr-title').textContent = title;
-document.getElementById('search-query-display').textContent = title;
+    if (dh) dh.src = thumb;
+    if (sr) sr.src = thumb;
+    if (hs) hs.src = thumb;
+    if (sb) sb.src = thumb;
+    if (list) list.src = thumb;
+    if (mob) mob.src = thumb;
+  }
 
-  // Apply title
-  document.querySelectorAll('.yt-feed-title, .yt-search-title').forEach(el => {
-    el.textContent = title;
-  });
+  // ======================
+  // TITLES
+  // ======================
+  const dhTitle = document.getElementById('dh-title');
+  const srTitle = document.getElementById('sr-title');
+  const hsTitle = document.getElementById('hs-title');
+  const sbTitle = document.getElementById('sb-title');
+  const listTitle = document.getElementById('list-title');
+  const mobTitle = document.getElementById('mob-title');
+  const searchDisplay = document.getElementById('search-query-display');
+
+  if (dhTitle) dhTitle.textContent = title;
+  if (srTitle) srTitle.textContent = title;
+  if (hsTitle) hsTitle.textContent = title;
+  if (sbTitle) sbTitle.textContent = title;
+  if (listTitle) listTitle.textContent = title;
+  if (mobTitle) mobTitle.textContent = title;
+  if (searchDisplay) searchDisplay.textContent = title;
 
 });
 </script>
@@ -150,7 +269,6 @@ document.getElementById('search-query-display').textContent = title;
 
   showPreview();
 
-  // ✅ THIS is the fix
   backBtn.onclick = () => {
     window.location.href = "index.html";
   };
