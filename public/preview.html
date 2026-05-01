@@ -1,103 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <link rel="stylesheet" href="styles.css">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ThumbnailChecker — See Your Thumbnail Everywhere</title>
+<div class="yt-home-grid">
 
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-</head>
-
-<body>
-
-<button id="backBtn">← Back</button>
-
-<div class="main-title">Your Thumbnail on <span>Every Platform</span></div>
-<div class="subtitle">Scroll down to see how your content appears everywhere YouTube lives</div>
-
-<div class="preview-grid">
-    <!-- Desktop Home -->
-  <div class="preview-card">
-    <div class="card-header">
-      <span class="platform-badge">DESKTOP</span>
-      <span>YouTube Home</span>
+  <!-- MAIN VIDEO (your thumbnail) -->
+  <div class="yt-home-item">
+    <div class="yt-thumb">
+      <img data-thumb src="">
     </div>
 
-    <div class="yt-sim">
-      <div class="yt-thumb">
-        <img src="">
-      </div>
-
-      <div class="yt-feed-title">Video title</div>
+    <div class="yt-meta">
+      <div class="yt-title">Video title here</div>
+      <div class="yt-channel">Your Channel • 1.2K views</div>
     </div>
   </div>
 
-  <!-- Search -->
-  <div class="preview-card">
-    <div class="card-header">
-      <span class="platform-badge">DESKTOP</span>
-      <span>Search Results</span>
-    </div>
+  <!-- OTHER VIDEOS (placeholders) -->
+  <div class="yt-home-item">
+    <div class="yt-thumb placeholder"></div>
+  </div>
 
-    <div class="yt-sim">
-      <div class="yt-thumb">
-        <img src="">
-      </div>
-
-      <div class="yt-search-title">Video title</div>
-    </div>
+  <div class="yt-home-item">
+    <div class="yt-thumb placeholder"></div>
   </div>
 
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-
-  const thumb = sessionStorage.getItem('thumbDataURL');
-  const title = sessionStorage.getItem('videoTitle') || 'Your Video Title';
-
-  console.log("Thumbnail:", thumb); // debug
-
-  // Apply thumbnail
-  document.querySelectorAll('img').forEach(img => {
-    if (thumb) {
-      img.src = thumb;
-    }
-  });
-
-  // Apply title
-  document.querySelectorAll('.yt-feed-title, .yt-search-title').forEach(el => {
-    el.textContent = title;
-  });
-
-});
-</script>
-<script>
-  const backBtn = document.getElementById('backBtn');
-  const previewGrid = document.querySelector('.preview-grid');
-  const mainTitle = document.querySelector('.main-title');
-  const subtitle = document.querySelector('.subtitle');
-
-  function showPreview() {
-    previewGrid.style.display = '';
-    mainTitle.style.display = '';
-    subtitle.style.display = '';
-    backBtn.style.display = 'inline-flex';
-  }
-
-  function showUpload() {
-    previewGrid.style.display = 'none';
-    mainTitle.style.display = 'none';
-    subtitle.style.display = 'none';
-    backBtn.style.display = 'none';
-  }
-
-  showPreview();
-
-  // ✅ THIS is the fix
-  backBtn.onclick = () => {
-    window.location.href = "index.html";
-  };
-</script>
-</body>
-</html>
