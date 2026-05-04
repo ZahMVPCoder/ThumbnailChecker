@@ -960,3 +960,59 @@ body.dark-mode #videoTitle {
   color: #f1f1f1;
   border-color: #333;
 }
+
+/* ============================= */
+/* DARK MODE — PREVIEW FIXES */
+/* Makes all preview sections match YouTube dark mode */
+/* ============================= */
+
+body.dark-mode {
+  background: #0f0f0f;
+  color: #f1f1f1;
+}
+
+/* Main preview cards */
+body.dark-mode .preview-card {
+  background: #181818;
+  color: #f1f1f1;
+}
+
+/* Card headers */
+body.dark-mode .card-header {
+  background: #181818;
+  color: #f1f1f1;
+  border-bottom: 1px solid #303030;
+}
+
+/* Right-side preview bodies that were staying white */
+body.dark-mode .yt-home-small,
+body.dark-mode .yt-sidebar,
+body.dark-mode .yt-list,
+body.dark-mode .yt-mobile {
+  background: #0f0f0f;
+  color: #f1f1f1;
+  padding: 18px;
+}
+
+/* Text inside those sections */
+body.dark-mode .yt-hs-title,
+body.dark-mode .yt-sb-title,
+body.dark-mode .yt-list-title,
+body.dark-mode #mob-title {
+  color: #f1f1f1;
+}
+
+/* Smaller metadata text */
+body.dark-mode .yt-hs-channel,
+body.dark-mode .yt-sb-meta,
+body.dark-mode .yt-list-meta {
+  color: #aaa;
+}
+
+/* Placeholder boxes */
+body.dark-mode .yt-thumb-wrap,
+body.dark-mode .yt-sb-thumb,
+body.dark-mode .yt-list-thumb,
+body.dark-mode .yt-mobile-thumb {
+  background: #303030;
+}
