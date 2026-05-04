@@ -70,8 +70,37 @@
   }
 </style>
 </head>
+
+<script>
+  const darkModeToggle = document.getElementById("darkModeToggle");
+
+  if (localStorage.getItem("darkMode") === "enabled") {
+    document.body.classList.add("dark-mode");
+    if (darkModeToggle) darkModeToggle.checked = true;
+  }
+
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener("change", () => {
+      if (darkModeToggle.checked) {
+        document.body.classList.add("dark-mode");
+        localStorage.setItem("darkMode", "enabled");
+      } else {
+        document.body.classList.remove("dark-mode");
+        localStorage.setItem("darkMode", "disabled");
+      }
+    });
+  }
+</script>
+
 <body>
 
+<div class="theme-toggle">
+  <label class="switch">
+    <input type="checkbox" id="darkModeToggle">
+    <span class="slider"></span>
+  </label>
+  <span>Toggle Dark Mode</span>
+</div>
 
 <div class="logo-icon">
   <img src="favicon.png" alt="logo">
