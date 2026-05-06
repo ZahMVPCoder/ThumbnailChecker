@@ -3,6 +3,14 @@ import { Upload, ImageIcon } from "lucide-react";
 interface UploadSectionProps {
   thumbnail: string | null;
   title: string;
+  submissions: {
+    id: number;
+    title: string;
+    thumbnail: string;
+    createdAt: string;
+  }[];
+  isSaving: boolean;
+  error: string;
   onThumbnailChange: (file: File) => void;
   onTitleChange: (title: string) => void;
   onPreview: () => void;
@@ -11,6 +19,9 @@ interface UploadSectionProps {
 export function UploadSection({
   thumbnail,
   title,
+  submissions,
+  isSaving,
+  error,
   onThumbnailChange,
   onTitleChange,
   onPreview,
@@ -86,12 +97,54 @@ export function UploadSection({
 
         <button
           onClick={onPreview}
-          disabled={!thumbnail || !title}
+          disabled={!thumbnail || !title || isSaving}
           className="w-full py-3 px-6 bg-accent text-accent-foreground rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Preview Across Platforms
+          {isSaving ? "Saving Thumbnail..." : "Save and Preview Across Platforms"}
         </button>
+
+        {error ? (
+          <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {error}
+          </div>
+        ) : null}
       </div>
+
+      <section className="space-y-3">
+        <div>
+          <h2 className="text-xl font-semibold">Saved Thumbnail Checks</h2>
+          <p className="text-sm text-muted-foreground">
+            Recent submissions loaded from the database
+          </p>
+        </div>
+
+        {submissions.length === 0 ? (
+          <div className="rounded-lg border border-border px-4 py-5 text-sm text-muted-foreground">
+            No saved thumbnail checks yet.
+          </div>
+        ) : (
+          <div className="grid gap-3">
+            {submissions.map((submission) => (
+              <article
+                key={submission.id}
+                className="grid grid-cols-[112px_1fr] gap-3 rounded-lg border border-border p-3"
+              >
+                <img
+                  src={submission.thumbnail}
+                  alt=""
+                  className="aspect-video w-full rounded object-cover"
+                />
+                <div className="min-w-0">
+                  <h3 className="truncate text-base font-medium">{submission.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Saved {new Date(submission.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
