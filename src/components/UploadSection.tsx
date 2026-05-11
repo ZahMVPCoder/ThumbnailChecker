@@ -1,5 +1,16 @@
-import { Check, Pencil, Upload, X } from "lucide-react";
+import { Check, Lightbulb, Pencil, Sparkles, Target, Upload, X } from "lucide-react";
 import { useState } from "react";
+
+interface ThumbnailCoachFeedback {
+  overallClickabilityScore: number;
+  thumbnailReadability: string;
+  titleStrength: string;
+  curiosityClickAppeal: string;
+  mobileVisibility: string;
+  suggestedImprovements: string[];
+  betterTitleIdeas: string[];
+  thumbnailTextSuggestions: string[];
+}
 
 interface UploadSectionProps {
   thumbnail: string | null;
@@ -11,11 +22,14 @@ interface UploadSectionProps {
     createdAt: string;
   }[];
   isSaving: boolean;
+  isAnalyzing: boolean;
   updatingSubmissionId: number | null;
+  coachFeedback: ThumbnailCoachFeedback | null;
   error: string;
   onThumbnailChange: (file: File) => void;
   onTitleChange: (title: string) => void;
   onPreview: () => void;
+  onAnalyze: () => void;
   onUpdateSubmission: (id: number, title: string) => void;
 }
 
@@ -24,11 +38,14 @@ export function UploadSection({
   title,
   submissions,
   isSaving,
+  isAnalyzing,
   updatingSubmissionId,
+  coachFeedback,
   error,
   onThumbnailChange,
   onTitleChange,
   onPreview,
+  onAnalyze,
   onUpdateSubmission,
 }: UploadSectionProps) {
   const [editingSubmissionId, setEditingSubmissionId] = useState<number | null>(null);
@@ -127,12 +144,58 @@ export function UploadSection({
           {isSaving ? "Saving Thumbnail..." : "Save and Preview Across Platforms"}
         </button>
 
+        <button
+          onClick={onAnalyze}
+          disabled={!thumbnail || !title || isAnalyzing}
+          className="flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 font-medium hover:bg-accent/50 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Sparkles className="h-5 w-5" />
+          {isAnalyzing ? "AI Coach Is Thinking..." : "Analyze Thumbnail & Title"}
+        </button>
+
         {error ? (
           <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {error}
           </div>
         ) : null}
       </div>
+
+      {coachFeedback ? (
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold">AI Thumbnail Coach</h2>
+            <p className="text-sm text-muted-foreground">
+              Practical CTR feedback from your local Ollama model
+            </p>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <article className="rounded-lg border border-border p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Target className="h-5 w-5 text-accent" />
+                <h3 className="font-semibold">Overall Clickability Score</h3>
+              </div>
+              <div className="text-4xl font-bold">
+                {coachFeedback.overallClickabilityScore}
+                <span className="text-lg text-muted-foreground">/10</span>
+              </div>
+            </article>
+
+            <FeedbackCard title="Thumbnail Readability" body={coachFeedback.thumbnailReadability} />
+            <FeedbackCard title="Title Strength" body={coachFeedback.titleStrength} />
+            <FeedbackCard title="Curiosity / Click Appeal" body={coachFeedback.curiosityClickAppeal} />
+            <FeedbackCard title="Mobile Visibility" body={coachFeedback.mobileVisibility} />
+          </div>
+
+          <FeedbackList
+            title="Suggested Improvements"
+            items={coachFeedback.suggestedImprovements}
+            icon={<Lightbulb className="h-5 w-5 text-accent" />}
+          />
+          <FeedbackList title="3 Better Title Ideas" items={coachFeedback.betterTitleIdeas} />
+          <FeedbackList title="Thumbnail Text Suggestions" items={coachFeedback.thumbnailTextSuggestions} />
+        </section>
+      ) : null}
 
       <section className="space-y-3">
         <div>
@@ -211,5 +274,41 @@ export function UploadSection({
         )}
       </section>
     </div>
+  );
+}
+
+function FeedbackCard({ title, body }: { title: string; body: string }) {
+  return (
+    <article className="rounded-lg border border-border p-4">
+      <h3 className="mb-2 font-semibold">{title}</h3>
+      <p className="text-sm leading-6 text-muted-foreground">{body}</p>
+    </article>
+  );
+}
+
+function FeedbackList({
+  title,
+  items,
+  icon,
+}: {
+  title: string;
+  items: string[];
+  icon?: React.ReactNode;
+}) {
+  return (
+    <article className="rounded-lg border border-border p-4">
+      <div className="mb-3 flex items-center gap-2">
+        {icon}
+        <h3 className="font-semibold">{title}</h3>
+      </div>
+      <div className="grid gap-2">
+        {items.map((item, index) => (
+          <div key={`${title}-${item}`} className="rounded-md bg-muted px-3 py-2 text-sm">
+            {title === "3 Better Title Ideas" ? `${index + 1}. ` : ""}
+            {item}
+          </div>
+        ))}
+      </div>
+    </article>
   );
 }
