@@ -165,7 +165,7 @@ export function UploadSection({
           <div>
             <h2 className="text-xl font-semibold">AI Thumbnail Coach</h2>
             <p className="text-sm text-muted-foreground">
-              Practical CTR feedback from your local Ollama model
+              Practical CTR feedback from a hosted vision model
             </p>
           </div>
 

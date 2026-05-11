@@ -1,36 +1,83 @@
-const ollamaHost = process.env.OLLAMA_HOST || "http://localhost:11434";
-const ollamaModel = process.env.OLLAMA_MODEL || "llama3.2-vision";
+const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
-const coachPrompt = `You are an expert YouTube strategist and thumbnail coach. Analyze this video thumbnail and title as if the creator wants maximum CTR from Browse/Home traffic. Give direct, honest, practical advice. Focus on whether the thumbnail is readable at small size, whether the title creates curiosity, whether the idea is clickable, and what should be changed. Do not be generic.
+const coachPrompt =
+  "You are an expert YouTube strategist and thumbnail coach. Analyze this video thumbnail and title as if the creator wants maximum CTR from Browse/Home traffic. Give direct, honest, practical advice. Focus on whether the thumbnail is readable at small size, whether the title creates curiosity, whether the idea is clickable, and what should be changed. Do not be generic.";
 
-Return only valid JSON in this exact shape:
-{
-  "overallClickabilityScore": number,
-  "thumbnailReadability": string,
-  "titleStrength": string,
-  "curiosityClickAppeal": string,
-  "mobileVisibility": string,
-  "suggestedImprovements": string[],
-  "betterTitleIdeas": string[],
-  "thumbnailTextSuggestions": string[]
-}`;
+const thumbnailCoachSchema = {
+  type: "OBJECT",
+  properties: {
+    overallClickabilityScore: {
+      type: "NUMBER",
+      description: "Overall clickability score from 1 to 10.",
+    },
+    thumbnailReadability: { type: "STRING" },
+    titleStrength: { type: "STRING" },
+    curiosityClickAppeal: { type: "STRING" },
+    mobileVisibility: { type: "STRING" },
+    suggestedImprovements: {
+      type: "ARRAY",
+      items: { type: "STRING" },
+      description: "Three to six practical improvements.",
+    },
+    betterTitleIdeas: {
+      type: "ARRAY",
+      items: { type: "STRING" },
+      description: "Exactly three stronger title ideas.",
+    },
+    thumbnailTextSuggestions: {
+      type: "ARRAY",
+      items: { type: "STRING" },
+      description: "Three to five short thumbnail text options.",
+    },
+  },
+  required: [
+    "overallClickabilityScore",
+    "thumbnailReadability",
+    "titleStrength",
+    "curiosityClickAppeal",
+    "mobileVisibility",
+    "suggestedImprovements",
+    "betterTitleIdeas",
+    "thumbnailTextSuggestions",
+  ],
+  propertyOrdering: [
+    "overallClickabilityScore",
+    "thumbnailReadability",
+    "titleStrength",
+    "curiosityClickAppeal",
+    "mobileVisibility",
+    "suggestedImprovements",
+    "betterTitleIdeas",
+    "thumbnailTextSuggestions",
+  ],
+};
 
-function getBase64Image(thumbnail: string) {
-  return thumbnail.includes(",") ? thumbnail.split(",")[1] : thumbnail;
+function parseDataUrl(thumbnail: string) {
+  const match = thumbnail.match(/^data:(.+);base64,(.+)$/);
+
+  if (!match) {
+    return {
+      mimeType: "image/png",
+      data: thumbnail,
+    };
+  }
+
+  return {
+    mimeType: match[1],
+    data: match[2],
+  };
 }
 
-function parseJsonResponse(responseText: string) {
-  try {
-    return JSON.parse(responseText);
-  } catch {
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+function extractGeminiText(data: any) {
+  const text = data.candidates?.[0]?.content?.parts
+    ?.map((part: { text?: string }) => part.text || "")
+    .join("");
 
-    if (!jsonMatch) {
-      throw new Error("Ollama did not return valid JSON.");
-    }
-
-    return JSON.parse(jsonMatch[0]);
+  if (!text) {
+    throw new Error("Gemini did not return text output.");
   }
+
+  return text;
 }
 
 export default async function handler(req: any, res: any) {
@@ -49,33 +96,59 @@ export default async function handler(req: any, res: any) {
     return res.status(400).json({ error: "A thumbnail image is required." });
   }
 
-  try {
-    const ollamaResponse = await fetch(`${ollamaHost}/api/generate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: ollamaModel,
-        prompt: `${coachPrompt}\n\nVideo title: ${title.trim()}`,
-        images: [getBase64Image(thumbnail)],
-        stream: false,
-        format: "json",
-      }),
-    });
+  if (!process.env.GEMINI_API_KEY) {
+    return res.status(500).json({ error: "GEMINI_API_KEY is not configured." });
+  }
 
-    if (!ollamaResponse.ok) {
+  const image = parseDataUrl(thumbnail);
+
+  try {
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": process.env.GEMINI_API_KEY,
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: `${coachPrompt}\n\nVideo title: ${title.trim()}`,
+                },
+                {
+                  inlineData: {
+                    mimeType: image.mimeType,
+                    data: image.data,
+                  },
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: thumbnailCoachSchema,
+          },
+        }),
+      },
+    );
+
+    if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text();
       return res.status(502).json({
-        error: `Ollama returned ${ollamaResponse.status}. Make sure Ollama is running and the ${ollamaModel} model is installed.`,
+        error: `Gemini returned ${geminiResponse.status}. ${errorText}`,
       });
     }
 
-    const data = await ollamaResponse.json();
-    return res.status(200).json(parseJsonResponse(data.response));
+    const data = await geminiResponse.json();
+    return res.status(200).json(JSON.parse(extractGeminiText(data)));
   } catch (error) {
     console.error(error);
     return res.status(503).json({
-      error: `Unable to reach Ollama at ${ollamaHost}. Start Ollama and install the ${ollamaModel} model.`,
+      error: "Unable to analyze this thumbnail with Gemini right now.",
     });
   }
 }
