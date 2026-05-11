@@ -10,10 +10,18 @@ datasource db {
 model ThumbnailSubmission {
   id        Int      @id @default(autoincrement())
   deviceId  String
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
   title     String
   thumbnail String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([deviceId])
+}
+
+model Device {
+  id          String                @id
+  submissions ThumbnailSubmission[]
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
 }

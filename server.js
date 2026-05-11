@@ -8,6 +8,14 @@ const prisma = new PrismaClient();
 const port = process.env.PORT || 3001;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+async function ensureDevice(deviceId) {
+  return prisma.device.upsert({
+    where: { id: deviceId },
+    update: {},
+    create: { id: deviceId },
+  });
+}
+
 app.use(express.json({ limit: "12mb" }));
 
 app.get("/api/thumbnails", async (req, res) => {
@@ -18,6 +26,8 @@ app.get("/api/thumbnails", async (req, res) => {
   }
 
   try {
+    await ensureDevice(deviceId);
+
     const submissions = await prisma.thumbnailSubmission.findMany({
       where: { deviceId },
       orderBy: { createdAt: "desc" },
@@ -47,6 +57,8 @@ app.post("/api/thumbnails", async (req, res) => {
   }
 
   try {
+    await ensureDevice(deviceId);
+
     const submission = await prisma.thumbnailSubmission.create({
       data: {
         deviceId,
@@ -97,6 +109,8 @@ app.patch("/api/thumbnails", async (req, res) => {
   }
 
   try {
+    await ensureDevice(deviceId);
+
     const existingSubmission = await prisma.thumbnailSubmission.findFirst({
       where: {
         id: submissionId,

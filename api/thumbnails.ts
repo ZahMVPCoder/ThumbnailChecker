@@ -2,6 +2,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+async function ensureDevice(deviceId: string) {
+  return prisma.device.upsert({
+    where: { id: deviceId },
+    update: {},
+    create: { id: deviceId },
+  });
+}
+
 export default async function handler(req: any, res: any) {
   if (req.method === "GET") {
     const deviceId = req.query.deviceId;
@@ -11,6 +19,8 @@ export default async function handler(req: any, res: any) {
     }
 
     try {
+      await ensureDevice(deviceId);
+
       const submissions = await prisma.thumbnailSubmission.findMany({
         where: { deviceId },
         orderBy: { createdAt: "desc" },
@@ -40,6 +50,8 @@ export default async function handler(req: any, res: any) {
     }
 
     try {
+      await ensureDevice(deviceId);
+
       const submission = await prisma.thumbnailSubmission.create({
         data: {
           deviceId,
@@ -90,6 +102,8 @@ export default async function handler(req: any, res: any) {
     }
 
     try {
+      await ensureDevice(deviceId);
+
       const existingSubmission = await prisma.thumbnailSubmission.findFirst({
         where: {
           id: submissionId,
