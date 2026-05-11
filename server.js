@@ -234,6 +234,52 @@ app.patch("/api/thumbnails", async (req, res) => {
   }
 });
 
+app.delete("/api/thumbnails", async (req, res) => {
+  const { id, deviceId, clearAll } = req.body;
+
+  if (typeof deviceId !== "string" || deviceId.trim().length === 0) {
+    return res.status(400).json({ error: "A device ID is required." });
+  }
+
+  try {
+    await ensureDevice(deviceId);
+
+    if (clearAll === true) {
+      const result = await prisma.thumbnailSubmission.deleteMany({
+        where: { deviceId },
+      });
+
+      return res.json({ deletedCount: result.count });
+    }
+
+    const submissionId = Number(id);
+
+    if (!Number.isInteger(submissionId)) {
+      return res.status(400).json({ error: "A valid submission ID is required." });
+    }
+
+    const existingSubmission = await prisma.thumbnailSubmission.findFirst({
+      where: {
+        id: submissionId,
+        deviceId,
+      },
+    });
+
+    if (!existingSubmission) {
+      return res.status(404).json({ error: "Saved thumbnail check not found." });
+    }
+
+    await prisma.thumbnailSubmission.delete({
+      where: { id: submissionId },
+    });
+
+    res.json({ deletedId: submissionId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to delete thumbnail submission." });
+  }
+});
+
 app.post("/api/analyze-thumbnail", async (req, res) => {
   const { title, thumbnail } = req.body;
 

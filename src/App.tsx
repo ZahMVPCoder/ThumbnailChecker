@@ -44,6 +44,8 @@ export default function App() {
   const [isSaving, setIsSaving] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [updatingSubmissionId, setUpdatingSubmissionId] = useState<number | null>(null);
+  const [deletingSubmissionId, setDeletingSubmissionId] = useState<number | null>(null);
+  const [isClearingSubmissions, setIsClearingSubmissions] = useState(false);
   const [error, setError] = useState("");
   const [coachFeedback, setCoachFeedback] = useState<ThumbnailCoachFeedback | null>(null);
   const [deviceId] = useState(getDeviceId);
@@ -179,6 +181,66 @@ export default function App() {
     }
   };
 
+  const handleDeleteSubmission = async (id: number) => {
+    if (deletingSubmissionId !== null || isClearingSubmissions) {
+      return;
+    }
+
+    setDeletingSubmissionId(id);
+    setError("");
+
+    try {
+      const response = await fetch("/api/thumbnails", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, deviceId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to delete this saved thumbnail.");
+      }
+
+      setSubmissions((currentSubmissions) =>
+        currentSubmissions.filter((submission) => submission.id !== id),
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to delete this saved thumbnail.");
+    } finally {
+      setDeletingSubmissionId(null);
+    }
+  };
+
+  const handleClearSubmissions = async () => {
+    if (submissions.length === 0 || isClearingSubmissions || deletingSubmissionId !== null) {
+      return;
+    }
+
+    setIsClearingSubmissions(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/thumbnails", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ deviceId, clearAll: true }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to clear saved thumbnails.");
+      }
+
+      setSubmissions([]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to clear saved thumbnails.");
+    } finally {
+      setIsClearingSubmissions(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <ThemeToggle />
@@ -192,6 +254,8 @@ export default function App() {
             isSaving={isSaving}
             isAnalyzing={isAnalyzing}
             updatingSubmissionId={updatingSubmissionId}
+            deletingSubmissionId={deletingSubmissionId}
+            isClearingSubmissions={isClearingSubmissions}
             coachFeedback={coachFeedback}
             error={error}
             onThumbnailChange={handleThumbnailChange}
@@ -199,6 +263,8 @@ export default function App() {
             onPreview={handlePreview}
             onAnalyze={handleAnalyze}
             onUpdateSubmission={handleUpdateSubmission}
+            onDeleteSubmission={handleDeleteSubmission}
+            onClearSubmissions={handleClearSubmissions}
           />
         </div>
       ) : (

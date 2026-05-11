@@ -1,4 +1,4 @@
-import { Check, Lightbulb, Pencil, Sparkles, Target, Upload, X } from "lucide-react";
+import { Check, Lightbulb, Pencil, Sparkles, Target, Trash2, Upload, X } from "lucide-react";
 import { useState } from "react";
 
 interface ThumbnailCoachFeedback {
@@ -24,6 +24,8 @@ interface UploadSectionProps {
   isSaving: boolean;
   isAnalyzing: boolean;
   updatingSubmissionId: number | null;
+  deletingSubmissionId: number | null;
+  isClearingSubmissions: boolean;
   coachFeedback: ThumbnailCoachFeedback | null;
   error: string;
   onThumbnailChange: (file: File) => void;
@@ -31,6 +33,8 @@ interface UploadSectionProps {
   onPreview: () => void;
   onAnalyze: () => void;
   onUpdateSubmission: (id: number, title: string) => void;
+  onDeleteSubmission: (id: number) => void;
+  onClearSubmissions: () => void;
 }
 
 export function UploadSection({
@@ -40,6 +44,8 @@ export function UploadSection({
   isSaving,
   isAnalyzing,
   updatingSubmissionId,
+  deletingSubmissionId,
+  isClearingSubmissions,
   coachFeedback,
   error,
   onThumbnailChange,
@@ -47,6 +53,8 @@ export function UploadSection({
   onPreview,
   onAnalyze,
   onUpdateSubmission,
+  onDeleteSubmission,
+  onClearSubmissions,
 }: UploadSectionProps) {
   const [editingSubmissionId, setEditingSubmissionId] = useState<number | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
@@ -72,6 +80,12 @@ export function UploadSection({
     onUpdateSubmission(id, editingTitle);
     setEditingSubmissionId(null);
     setEditingTitle("");
+  };
+
+  const clearSubmissions = () => {
+    if (window.confirm("Clear all saved thumbnail checks for this device?")) {
+      onClearSubmissions();
+    }
   };
 
   return (
@@ -129,7 +143,7 @@ export function UploadSection({
             value={title}
             onChange={(e) => onTitleChange(e.target.value)}
             placeholder="Enter your video title..."
-            className="w-full px-4 py-3 bg-input-background rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-accent"
+            className="w-full px-4 py-3 bg-input-background text-black placeholder:text-gray-500 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-accent"
           />
           <div className="mt-1 text-xs text-muted-foreground">
             {title.length} characters
@@ -198,11 +212,25 @@ export function UploadSection({
       ) : null}
 
       <section className="space-y-3">
-        <div>
-          <h2 className="text-xl font-semibold">Saved Thumbnail Checks</h2>
-          <p className="text-sm text-muted-foreground">
-            Recent submissions loaded from the database
-          </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold">Saved Thumbnail Checks</h2>
+            <p className="text-sm text-muted-foreground">
+              Recent submissions loaded from the database
+            </p>
+          </div>
+
+          {submissions.length > 0 ? (
+            <button
+              type="button"
+              onClick={clearSubmissions}
+              disabled={isClearingSubmissions}
+              className="flex shrink-0 items-center gap-2 rounded-md border border-destructive/40 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Trash2 className="h-4 w-4" />
+              {isClearingSubmissions ? "Clearing..." : "Clear All"}
+            </button>
+          ) : null}
         </div>
 
         {submissions.length === 0 ? (
@@ -258,14 +286,25 @@ export function UploadSection({
                       </button>
                     </>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => startEditing(submission.id, submission.title)}
-                      className="rounded-md border border-border p-2 hover:bg-accent/50"
-                      aria-label="Edit title"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => startEditing(submission.id, submission.title)}
+                        className="rounded-md border border-border p-2 hover:bg-accent/50"
+                        aria-label="Edit title"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDeleteSubmission(submission.id)}
+                        disabled={deletingSubmissionId === submission.id}
+                        className="rounded-md border border-destructive/40 p-2 text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label="Delete saved thumbnail check"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </>
                   )}
                 </div>
               </article>
