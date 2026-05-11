@@ -13,6 +13,9 @@ model ThumbnailSubmission {
   device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
   title     String
   thumbnail String   @db.Text
+  aiScore   Float?
+  aiFeedback Json?
+  checklist Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

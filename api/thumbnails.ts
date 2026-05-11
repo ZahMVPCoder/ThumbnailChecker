@@ -2,6 +2,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+function getOptionalSavedData(body: any) {
+  return {
+    ...(typeof body.aiScore === "number" ? { aiScore: body.aiScore } : {}),
+    ...(body.aiFeedback ? { aiFeedback: body.aiFeedback } : {}),
+    ...(body.checklist ? { checklist: body.checklist } : {}),
+  };
+}
+
 async function ensureDevice(deviceId: string) {
   return prisma.device.upsert({
     where: { id: deviceId },
@@ -57,6 +65,7 @@ export default async function handler(req: any, res: any) {
           deviceId,
           title: title.trim(),
           thumbnail,
+          ...getOptionalSavedData(req.body),
         },
       });
 
@@ -79,7 +88,13 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: "A device ID is required." });
     }
 
-    const data: { title?: string; thumbnail?: string } = {};
+    const data: {
+      title?: string;
+      thumbnail?: string;
+      aiScore?: number;
+      aiFeedback?: any;
+      checklist?: any;
+    } = getOptionalSavedData(req.body);
 
     if (typeof title === "string") {
       if (title.trim().length === 0) {

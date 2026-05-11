@@ -12,6 +12,13 @@ interface ThumbnailCoachFeedback {
   thumbnailTextSuggestions: string[];
 }
 
+interface ThumbnailChecklistItem {
+  id: string;
+  label: string;
+  passed: boolean;
+  helper: string;
+}
+
 interface UploadSectionProps {
   thumbnail: string | null;
   title: string;
@@ -19,6 +26,8 @@ interface UploadSectionProps {
     id: number;
     title: string;
     thumbnail: string;
+    aiScore?: number | null;
+    checklist?: ThumbnailChecklistItem[] | null;
     createdAt: string;
   }[];
   isSaving: boolean;
@@ -27,6 +36,7 @@ interface UploadSectionProps {
   deletingSubmissionId: number | null;
   isClearingSubmissions: boolean;
   coachFeedback: ThumbnailCoachFeedback | null;
+  checklist: ThumbnailChecklistItem[];
   error: string;
   onThumbnailChange: (file: File) => void;
   onTitleChange: (title: string) => void;
@@ -47,6 +57,7 @@ export function UploadSection({
   deletingSubmissionId,
   isClearingSubmissions,
   coachFeedback,
+  checklist,
   error,
   onThumbnailChange,
   onTitleChange,
@@ -212,6 +223,38 @@ export function UploadSection({
       ) : null}
 
       <section className="space-y-3">
+        <div>
+          <h2 className="text-xl font-semibold">Thumbnail Checklist</h2>
+          <p className="text-sm text-muted-foreground">
+            Quick readiness checks before you publish
+          </p>
+        </div>
+
+        <div className="grid gap-2">
+          {checklist.map((item) => (
+            <div
+              key={item.id}
+              className="flex items-start gap-3 rounded-lg border border-border p-3"
+            >
+              <div
+                className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                  item.passed
+                    ? "border-accent bg-accent text-accent-foreground"
+                    : "border-border text-muted-foreground"
+                }`}
+              >
+                {item.passed ? <Check className="h-3 w-3" /> : null}
+              </div>
+              <div>
+                <h3 className="text-sm font-medium">{item.label}</h3>
+                <p className="text-xs text-muted-foreground">{item.helper}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-3">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold">Saved Thumbnail Checks</h2>
@@ -263,6 +306,17 @@ export function UploadSection({
                   <p className="text-sm text-muted-foreground">
                     Saved {new Date(submission.createdAt).toLocaleDateString()}
                   </p>
+                  {typeof submission.aiScore === "number" ? (
+                    <p className="mt-1 text-sm font-medium text-accent">
+                      AI score: {submission.aiScore}/10
+                    </p>
+                  ) : null}
+                  {submission.checklist?.length ? (
+                    <p className="text-xs text-muted-foreground">
+                      Checklist: {submission.checklist.filter((item) => item.passed).length}/
+                      {submission.checklist.length} complete
+                    </p>
+                  ) : null}
                 </div>
                 <div className="flex items-start gap-1">
                   {editingSubmissionId === submission.id ? (

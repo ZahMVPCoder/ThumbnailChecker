@@ -8,6 +8,9 @@ interface ThumbnailSubmission {
   deviceId: string;
   title: string;
   thumbnail: string;
+  aiScore?: number | null;
+  aiFeedback?: ThumbnailCoachFeedback | null;
+  checklist?: ThumbnailChecklistItem[] | null;
   createdAt: string;
 }
 
@@ -20,6 +23,13 @@ interface ThumbnailCoachFeedback {
   suggestedImprovements: string[];
   betterTitleIdeas: string[];
   thumbnailTextSuggestions: string[];
+}
+
+interface ThumbnailChecklistItem {
+  id: string;
+  label: string;
+  passed: boolean;
+  helper: string;
 }
 
 const deviceIdStorageKey = "thumbnailchecker-device-id";
@@ -36,6 +46,54 @@ function getDeviceId() {
   return nextDeviceId;
 }
 
+function createThumbnailChecklist(
+  title: string,
+  thumbnail: string | null,
+  feedback: ThumbnailCoachFeedback | null,
+): ThumbnailChecklistItem[] {
+  const trimmedTitle = title.trim();
+  const titleLength = trimmedTitle.length;
+
+  return [
+    {
+      id: "thumbnail-uploaded",
+      label: "Thumbnail uploaded",
+      passed: Boolean(thumbnail),
+      helper: "Add a real thumbnail image before testing clickability.",
+    },
+    {
+      id: "title-added",
+      label: "Video title added",
+      passed: titleLength > 0,
+      helper: "A clear title gives the thumbnail context.",
+    },
+    {
+      id: "title-length",
+      label: "Title is scan-friendly",
+      passed: titleLength >= 20 && titleLength <= 70,
+      helper: "Aim for a title around 20-70 characters.",
+    },
+    {
+      id: "ai-reviewed",
+      label: "AI coach reviewed it",
+      passed: Boolean(feedback),
+      helper: "Run the AI coach to get CTR-focused feedback.",
+    },
+    {
+      id: "score-ready",
+      label: "Clickability score is 7+",
+      passed: (feedback?.overallClickabilityScore ?? 0) >= 7,
+      helper: "A score under 7 means the thumbnail/title likely need another pass.",
+    },
+    {
+      id: "mobile-reviewed",
+      label: "Mobile visibility reviewed",
+      passed: Boolean(feedback?.mobileVisibility),
+      helper: "Most viewers see thumbnails small, so mobile readability matters.",
+    },
+  ];
+}
+
 export default function App() {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [title, setTitle] = useState("");
@@ -48,7 +106,13 @@ export default function App() {
   const [isClearingSubmissions, setIsClearingSubmissions] = useState(false);
   const [error, setError] = useState("");
   const [coachFeedback, setCoachFeedback] = useState<ThumbnailCoachFeedback | null>(null);
+  const [checklist, setChecklist] = useState<ThumbnailChecklistItem[]>([]);
+  const [currentSubmissionId, setCurrentSubmissionId] = useState<number | null>(null);
   const [deviceId] = useState(getDeviceId);
+
+  useEffect(() => {
+    setChecklist(createThumbnailChecklist(title, thumbnail, coachFeedback));
+  }, [title, thumbnail, coachFeedback]);
 
   useEffect(() => {
     const loadSubmissions = async () => {
@@ -73,8 +137,16 @@ export default function App() {
     const reader = new FileReader();
     reader.onloadend = () => {
       setThumbnail(reader.result as string);
+      setCoachFeedback(null);
+      setCurrentSubmissionId(null);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleTitleChange = (nextTitle: string) => {
+    setTitle(nextTitle);
+    setCoachFeedback(null);
+    setCurrentSubmissionId(null);
   };
 
   const handlePreview = async () => {
@@ -91,7 +163,14 @@ export default function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ deviceId, title, thumbnail }),
+        body: JSON.stringify({
+          deviceId,
+          title,
+          thumbnail,
+          aiScore: coachFeedback?.overallClickabilityScore,
+          aiFeedback: coachFeedback,
+          checklist,
+        }),
       });
 
       if (!response.ok) {
@@ -103,6 +182,7 @@ export default function App() {
         savedSubmission,
         ...currentSubmissions.filter((submission) => submission.id !== savedSubmission.id),
       ]);
+      setCurrentSubmissionId(savedSubmission.id);
       setShowPreview(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to save this thumbnail.");
@@ -130,7 +210,7 @@ export default function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, thumbnail }),
+        body: JSON.stringify({ deviceId, title, thumbnail }),
       });
 
       const data = await response.json();
@@ -139,7 +219,36 @@ export default function App() {
         throw new Error(data.error || "Unable to analyze this thumbnail.");
       }
 
-      setCoachFeedback(data as ThumbnailCoachFeedback);
+      const feedback = data as ThumbnailCoachFeedback;
+      const nextChecklist = createThumbnailChecklist(title, thumbnail, feedback);
+
+      setCoachFeedback(feedback);
+      setChecklist(nextChecklist);
+
+      if (currentSubmissionId !== null) {
+        const updateResponse = await fetch("/api/thumbnails", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: currentSubmissionId,
+            deviceId,
+            aiScore: feedback.overallClickabilityScore,
+            aiFeedback: feedback,
+            checklist: nextChecklist,
+          }),
+        });
+
+        if (updateResponse.ok) {
+          const updatedSubmission = (await updateResponse.json()) as ThumbnailSubmission;
+          setSubmissions((currentSubmissions) =>
+            currentSubmissions.map((submission) =>
+              submission.id === updatedSubmission.id ? updatedSubmission : submission,
+            ),
+          );
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to analyze this thumbnail.");
     } finally {
@@ -205,6 +314,9 @@ export default function App() {
       setSubmissions((currentSubmissions) =>
         currentSubmissions.filter((submission) => submission.id !== id),
       );
+      if (currentSubmissionId === id) {
+        setCurrentSubmissionId(null);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to delete this saved thumbnail.");
     } finally {
@@ -234,6 +346,7 @@ export default function App() {
       }
 
       setSubmissions([]);
+      setCurrentSubmissionId(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to clear saved thumbnails.");
     } finally {
@@ -257,9 +370,10 @@ export default function App() {
             deletingSubmissionId={deletingSubmissionId}
             isClearingSubmissions={isClearingSubmissions}
             coachFeedback={coachFeedback}
+            checklist={checklist}
             error={error}
             onThumbnailChange={handleThumbnailChange}
-            onTitleChange={setTitle}
+            onTitleChange={handleTitleChange}
             onPreview={handlePreview}
             onAnalyze={handleAnalyze}
             onUpdateSubmission={handleUpdateSubmission}

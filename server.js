@@ -27,6 +27,9 @@ const prisma = new PrismaClient();
 const port = process.env.PORT || 3001;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const rateLimitWindowMs = 60 * 60 * 1000;
+const maxAnalysesPerWindow = 5;
+const analysisRateLimits = new Map();
 
 const coachPrompt =
   "You are an expert YouTube strategist and thumbnail coach. Analyze this video thumbnail and title as if the creator wants maximum CTR from Browse/Home traffic. Give direct, honest, practical advice. Focus on whether the thumbnail is readable at small size, whether the title creates curiosity, whether the idea is clickable, and what should be changed. Do not be generic.";
@@ -88,6 +91,14 @@ async function ensureDevice(deviceId) {
   });
 }
 
+function getOptionalSavedData(body) {
+  return {
+    ...(typeof body.aiScore === "number" ? { aiScore: body.aiScore } : {}),
+    ...(body.aiFeedback ? { aiFeedback: body.aiFeedback } : {}),
+    ...(body.checklist ? { checklist: body.checklist } : {}),
+  };
+}
+
 function parseDataUrl(thumbnail) {
   const match = thumbnail.match(/^data:(.+);base64,(.+)$/);
 
@@ -114,6 +125,26 @@ function extractGeminiText(data) {
   }
 
   return text;
+}
+
+function checkRateLimit(deviceId) {
+  const now = Date.now();
+  const currentLimit = analysisRateLimits.get(deviceId);
+
+  if (!currentLimit || currentLimit.resetAt <= now) {
+    analysisRateLimits.set(deviceId, {
+      count: 1,
+      resetAt: now + rateLimitWindowMs,
+    });
+    return null;
+  }
+
+  if (currentLimit.count >= maxAnalysesPerWindow) {
+    return Math.ceil((currentLimit.resetAt - now) / 60000);
+  }
+
+  currentLimit.count += 1;
+  return null;
 }
 
 app.use(express.json({ limit: "12mb" }));
@@ -164,6 +195,7 @@ app.post("/api/thumbnails", async (req, res) => {
         deviceId,
         title: title.trim(),
         thumbnail,
+        ...getOptionalSavedData(req.body),
       },
     });
 
@@ -186,7 +218,7 @@ app.patch("/api/thumbnails", async (req, res) => {
     return res.status(400).json({ error: "A device ID is required." });
   }
 
-  const data = {};
+  const data = getOptionalSavedData(req.body);
 
   if (typeof title === "string") {
     if (title.trim().length === 0) {
@@ -281,7 +313,11 @@ app.delete("/api/thumbnails", async (req, res) => {
 });
 
 app.post("/api/analyze-thumbnail", async (req, res) => {
-  const { title, thumbnail } = req.body;
+  const { deviceId, title, thumbnail } = req.body;
+
+  if (typeof deviceId !== "string" || deviceId.trim().length === 0) {
+    return res.status(400).json({ error: "A device ID is required." });
+  }
 
   if (typeof title !== "string" || title.trim().length === 0) {
     return res.status(400).json({ error: "A video title is required." });
@@ -293,6 +329,14 @@ app.post("/api/analyze-thumbnail", async (req, res) => {
 
   if (!process.env.GEMINI_API_KEY) {
     return res.status(500).json({ error: "GEMINI_API_KEY is not configured." });
+  }
+
+  const retryAfterMinutes = checkRateLimit(deviceId);
+
+  if (retryAfterMinutes !== null) {
+    return res.status(429).json({
+      error: `AI analysis limit reached. Try again in about ${retryAfterMinutes} minutes.`,
+    });
   }
 
   const image = parseDataUrl(thumbnail);
