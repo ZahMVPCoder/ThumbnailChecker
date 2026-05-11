@@ -31,6 +31,7 @@ export default function App() {
   const [showPreview, setShowPreview] = useState(false);
   const [submissions, setSubmissions] = useState<ThumbnailSubmission[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [updatingSubmissionId, setUpdatingSubmissionId] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [deviceId] = useState(getDeviceId);
 
@@ -99,6 +100,40 @@ export default function App() {
     setShowPreview(false);
   };
 
+  const handleUpdateSubmission = async (id: number, nextTitle: string) => {
+    if (updatingSubmissionId !== null) {
+      return;
+    }
+
+    setUpdatingSubmissionId(id);
+    setError("");
+
+    try {
+      const response = await fetch("/api/thumbnails", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, deviceId, title: nextTitle }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to update this saved thumbnail.");
+      }
+
+      const updatedSubmission = (await response.json()) as ThumbnailSubmission;
+      setSubmissions((currentSubmissions) =>
+        currentSubmissions.map((submission) =>
+          submission.id === updatedSubmission.id ? updatedSubmission : submission,
+        ),
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to update this saved thumbnail.");
+    } finally {
+      setUpdatingSubmissionId(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <ThemeToggle />
@@ -110,10 +145,12 @@ export default function App() {
             title={title}
             submissions={submissions}
             isSaving={isSaving}
+            updatingSubmissionId={updatingSubmissionId}
             error={error}
             onThumbnailChange={handleThumbnailChange}
             onTitleChange={setTitle}
             onPreview={handlePreview}
+            onUpdateSubmission={handleUpdateSubmission}
           />
         </div>
       ) : (

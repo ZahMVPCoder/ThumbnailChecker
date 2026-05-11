@@ -1,4 +1,5 @@
-import { Upload, ImageIcon } from "lucide-react";
+import { Check, Pencil, Upload, X } from "lucide-react";
+import { useState } from "react";
 
 interface UploadSectionProps {
   thumbnail: string | null;
@@ -10,10 +11,12 @@ interface UploadSectionProps {
     createdAt: string;
   }[];
   isSaving: boolean;
+  updatingSubmissionId: number | null;
   error: string;
   onThumbnailChange: (file: File) => void;
   onTitleChange: (title: string) => void;
   onPreview: () => void;
+  onUpdateSubmission: (id: number, title: string) => void;
 }
 
 export function UploadSection({
@@ -21,16 +24,37 @@ export function UploadSection({
   title,
   submissions,
   isSaving,
+  updatingSubmissionId,
   error,
   onThumbnailChange,
   onTitleChange,
   onPreview,
+  onUpdateSubmission,
 }: UploadSectionProps) {
+  const [editingSubmissionId, setEditingSubmissionId] = useState<number | null>(null);
+  const [editingTitle, setEditingTitle] = useState("");
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       onThumbnailChange(file);
     }
+  };
+
+  const startEditing = (id: number, currentTitle: string) => {
+    setEditingSubmissionId(id);
+    setEditingTitle(currentTitle);
+  };
+
+  const cancelEditing = () => {
+    setEditingSubmissionId(null);
+    setEditingTitle("");
+  };
+
+  const saveEditing = (id: number) => {
+    onUpdateSubmission(id, editingTitle);
+    setEditingSubmissionId(null);
+    setEditingTitle("");
   };
 
   return (
@@ -127,7 +151,7 @@ export function UploadSection({
             {submissions.map((submission) => (
               <article
                 key={submission.id}
-                className="grid grid-cols-[112px_1fr] gap-3 rounded-lg border border-border p-3"
+                className="grid grid-cols-[112px_1fr_auto] gap-3 rounded-lg border border-border p-3"
               >
                 <img
                   src={submission.thumbnail}
@@ -135,10 +159,51 @@ export function UploadSection({
                   className="aspect-video w-full rounded object-cover"
                 />
                 <div className="min-w-0">
-                  <h3 className="truncate text-base font-medium">{submission.title}</h3>
+                  {editingSubmissionId === submission.id ? (
+                    <input
+                      type="text"
+                      value={editingTitle}
+                      onChange={(event) => setEditingTitle(event.target.value)}
+                      className="w-full rounded border border-border bg-input-background px-3 py-2 text-base"
+                    />
+                  ) : (
+                    <h3 className="truncate text-base font-medium">{submission.title}</h3>
+                  )}
                   <p className="text-sm text-muted-foreground">
                     Saved {new Date(submission.createdAt).toLocaleDateString()}
                   </p>
+                </div>
+                <div className="flex items-start gap-1">
+                  {editingSubmissionId === submission.id ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => saveEditing(submission.id)}
+                        disabled={updatingSubmissionId === submission.id}
+                        className="rounded-md border border-border p-2 hover:bg-accent/50 disabled:opacity-50"
+                        aria-label="Save title"
+                      >
+                        <Check className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelEditing}
+                        className="rounded-md border border-border p-2 hover:bg-accent/50"
+                        aria-label="Cancel editing"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => startEditing(submission.id, submission.title)}
+                      className="rounded-md border border-border p-2 hover:bg-accent/50"
+                      aria-label="Edit title"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
               </article>
             ))}

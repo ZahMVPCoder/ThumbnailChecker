@@ -62,6 +62,64 @@ app.post("/api/thumbnails", async (req, res) => {
   }
 });
 
+app.patch("/api/thumbnails", async (req, res) => {
+  const { id, deviceId, title, thumbnail } = req.body;
+  const submissionId = Number(id);
+
+  if (!Number.isInteger(submissionId)) {
+    return res.status(400).json({ error: "A valid submission ID is required." });
+  }
+
+  if (typeof deviceId !== "string" || deviceId.trim().length === 0) {
+    return res.status(400).json({ error: "A device ID is required." });
+  }
+
+  const data = {};
+
+  if (typeof title === "string") {
+    if (title.trim().length === 0) {
+      return res.status(400).json({ error: "A video title is required." });
+    }
+
+    data.title = title.trim();
+  }
+
+  if (typeof thumbnail === "string") {
+    if (thumbnail.trim().length === 0) {
+      return res.status(400).json({ error: "A thumbnail image is required." });
+    }
+
+    data.thumbnail = thumbnail;
+  }
+
+  if (Object.keys(data).length === 0) {
+    return res.status(400).json({ error: "Nothing was provided to update." });
+  }
+
+  try {
+    const existingSubmission = await prisma.thumbnailSubmission.findFirst({
+      where: {
+        id: submissionId,
+        deviceId,
+      },
+    });
+
+    if (!existingSubmission) {
+      return res.status(404).json({ error: "Saved thumbnail check not found." });
+    }
+
+    const updatedSubmission = await prisma.thumbnailSubmission.update({
+      where: { id: submissionId },
+      data,
+    });
+
+    res.json(updatedSubmission);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to update thumbnail submission." });
+  }
+});
+
 app.use(express.static(path.join(__dirname, "dist")));
 
 app.get(/.*/, (_req, res) => {
