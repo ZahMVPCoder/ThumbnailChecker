@@ -150,14 +150,36 @@ export default function App() {
   };
 
   const handlePreview = async () => {
-    if (!thumbnail || !title || isSaving) {
+    if (!thumbnail || !title || isSaving || isAnalyzing) {
       return;
     }
 
     setIsSaving(true);
+    setIsAnalyzing(true);
     setError("");
+    setCoachFeedback(null);
 
     try {
+      const analysisResponse = await fetch("/api/analyze-thumbnail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ deviceId, title, thumbnail }),
+      });
+
+      const analysisData = await analysisResponse.json();
+
+      if (!analysisResponse.ok) {
+        throw new Error(analysisData.error || "Unable to analyze this thumbnail.");
+      }
+
+      const feedback = analysisData as ThumbnailCoachFeedback;
+      const nextChecklist = createThumbnailChecklist(title, thumbnail, feedback);
+
+      setCoachFeedback(feedback);
+      setChecklist(nextChecklist);
+
       const response = await fetch("/api/thumbnails", {
         method: "POST",
         headers: {
@@ -167,9 +189,9 @@ export default function App() {
           deviceId,
           title,
           thumbnail,
-          aiScore: coachFeedback?.overallClickabilityScore,
-          aiFeedback: coachFeedback,
-          checklist,
+          aiScore: feedback.overallClickabilityScore,
+          aiFeedback: feedback,
+          checklist: nextChecklist,
         }),
       });
 
@@ -185,75 +207,15 @@ export default function App() {
       setCurrentSubmissionId(savedSubmission.id);
       setShowPreview(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to save this thumbnail.");
+      setError(err instanceof Error ? err.message : "Unable to save and analyze this thumbnail.");
     } finally {
       setIsSaving(false);
+      setIsAnalyzing(false);
     }
   };
 
   const handleBack = () => {
     setShowPreview(false);
-  };
-
-  const handleAnalyze = async () => {
-    if (!thumbnail || !title || isAnalyzing) {
-      return;
-    }
-
-    setIsAnalyzing(true);
-    setError("");
-    setCoachFeedback(null);
-
-    try {
-      const response = await fetch("/api/analyze-thumbnail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ deviceId, title, thumbnail }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Unable to analyze this thumbnail.");
-      }
-
-      const feedback = data as ThumbnailCoachFeedback;
-      const nextChecklist = createThumbnailChecklist(title, thumbnail, feedback);
-
-      setCoachFeedback(feedback);
-      setChecklist(nextChecklist);
-
-      if (currentSubmissionId !== null) {
-        const updateResponse = await fetch("/api/thumbnails", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: currentSubmissionId,
-            deviceId,
-            aiScore: feedback.overallClickabilityScore,
-            aiFeedback: feedback,
-            checklist: nextChecklist,
-          }),
-        });
-
-        if (updateResponse.ok) {
-          const updatedSubmission = (await updateResponse.json()) as ThumbnailSubmission;
-          setSubmissions((currentSubmissions) =>
-            currentSubmissions.map((submission) =>
-              submission.id === updatedSubmission.id ? updatedSubmission : submission,
-            ),
-          );
-        }
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to analyze this thumbnail.");
-    } finally {
-      setIsAnalyzing(false);
-    }
   };
 
   const handleUpdateSubmission = async (id: number, nextTitle: string) => {
@@ -375,7 +337,6 @@ export default function App() {
             onThumbnailChange={handleThumbnailChange}
             onTitleChange={handleTitleChange}
             onPreview={handlePreview}
-            onAnalyze={handleAnalyze}
             onUpdateSubmission={handleUpdateSubmission}
             onDeleteSubmission={handleDeleteSubmission}
             onClearSubmissions={handleClearSubmissions}

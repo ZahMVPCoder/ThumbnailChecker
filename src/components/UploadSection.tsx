@@ -1,4 +1,4 @@
-import { Check, Lightbulb, Pencil, Sparkles, Target, Trash2, Upload, X } from "lucide-react";
+import { Check, Lightbulb, Pencil, Target, Trash2, Upload, X } from "lucide-react";
 import { useState } from "react";
 
 interface ThumbnailCoachFeedback {
@@ -41,7 +41,6 @@ interface UploadSectionProps {
   onThumbnailChange: (file: File) => void;
   onTitleChange: (title: string) => void;
   onPreview: () => void;
-  onAnalyze: () => void;
   onUpdateSubmission: (id: number, title: string) => void;
   onDeleteSubmission: (id: number) => void;
   onClearSubmissions: () => void;
@@ -62,7 +61,6 @@ export function UploadSection({
   onThumbnailChange,
   onTitleChange,
   onPreview,
-  onAnalyze,
   onUpdateSubmission,
   onDeleteSubmission,
   onClearSubmissions,
@@ -163,19 +161,10 @@ export function UploadSection({
 
         <button
           onClick={onPreview}
-          disabled={!thumbnail || !title || isSaving}
+          disabled={!thumbnail || !title || isSaving || isAnalyzing}
           className="w-full py-3 px-6 bg-accent text-accent-foreground rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSaving ? "Saving Thumbnail..." : "Save and Preview Across Platforms"}
-        </button>
-
-        <button
-          onClick={onAnalyze}
-          disabled={!thumbnail || !title || isAnalyzing}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 font-medium hover:bg-accent/50 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Sparkles className="h-5 w-5" />
-          {isAnalyzing ? "AI Coach Is Thinking..." : "Analyze Thumbnail & Title"}
+          {isSaving || isAnalyzing ? "Analyzing and Saving..." : "Save, Analyze & Preview"}
         </button>
 
         {error ? (
@@ -198,7 +187,7 @@ export function UploadSection({
             <article className="rounded-lg border border-border p-4">
               <div className="mb-2 flex items-center gap-2">
                 <Target className="h-5 w-5 text-accent" />
-                <h3 className="font-semibold">Overall Clickability Score</h3>
+                <h3 className="font-semibold">CTR Prediction Score</h3>
               </div>
               <div className="text-4xl font-bold">
                 {coachFeedback.overallClickabilityScore}
@@ -308,7 +297,7 @@ export function UploadSection({
                   </p>
                   {typeof submission.aiScore === "number" ? (
                     <p className="mt-1 text-sm font-medium text-accent">
-                      AI score: {submission.aiScore}/10
+                      CTR prediction: {submission.aiScore}/10
                     </p>
                   ) : null}
                   {submission.checklist?.length ? (
