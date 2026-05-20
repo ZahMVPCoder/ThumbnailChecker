@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BookOpen, LineChart, PlaySquare } from "lucide-react";
 import { UploadSection } from "./components/UploadSection";
 import { PreviewSection } from "./components/PreviewSection";
 import { ThemeToggle } from "./components/ThemeToggle";
@@ -318,37 +319,173 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SiteHeader />
       <ThemeToggle />
 
       {!showPreview ? (
-        <div className="flex items-center justify-center min-h-screen">
-          <UploadSection
-            thumbnail={thumbnail}
-            title={title}
-            submissions={submissions}
-            isSaving={isSaving}
-            isAnalyzing={isAnalyzing}
-            updatingSubmissionId={updatingSubmissionId}
-            deletingSubmissionId={deletingSubmissionId}
-            isClearingSubmissions={isClearingSubmissions}
-            coachFeedback={coachFeedback}
-            checklist={checklist}
-            error={error}
-            onThumbnailChange={handleThumbnailChange}
-            onTitleChange={handleTitleChange}
-            onPreview={handlePreview}
-            onUpdateSubmission={handleUpdateSubmission}
-            onDeleteSubmission={handleDeleteSubmission}
-            onClearSubmissions={handleClearSubmissions}
-          />
-        </div>
+        <>
+          <main>
+            <section className="mx-auto max-w-7xl px-6 pb-10 pt-16">
+              <div className="max-w-4xl space-y-5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-sm text-muted-foreground">
+                  <LineChart className="h-4 w-4 text-accent" />
+                  Thumbnail previews, AI feedback, and creator-ready checks
+                </div>
+                <h1 className="max-w-3xl text-4xl font-bold leading-tight md:text-5xl">
+                  YouTube Thumbnail Preview Tool
+                </h1>
+                <p className="max-w-5xl text-lg leading-8 text-muted-foreground">
+                  Upload a thumbnail, add your title, and see how the video will feel across YouTube-style layouts. ThumbnailChecker saves your checks, predicts clickability, and gives practical feedback before you publish.
+                </p>
+              </div>
+            </section>
+
+            <section id="tool" className="mx-auto max-w-7xl px-6 pb-16">
+              <div className="rounded-lg bg-muted/60 p-6 md:p-8">
+                <UploadSection
+                  thumbnail={thumbnail}
+                  title={title}
+                  submissions={submissions}
+                  isSaving={isSaving}
+                  isAnalyzing={isAnalyzing}
+                  updatingSubmissionId={updatingSubmissionId}
+                  deletingSubmissionId={deletingSubmissionId}
+                  isClearingSubmissions={isClearingSubmissions}
+                  coachFeedback={coachFeedback}
+                  checklist={checklist}
+                  error={error}
+                  onThumbnailChange={handleThumbnailChange}
+                  onTitleChange={handleTitleChange}
+                  onPreview={handlePreview}
+                  onUpdateSubmission={handleUpdateSubmission}
+                  onDeleteSubmission={handleDeleteSubmission}
+                  onClearSubmissions={handleClearSubmissions}
+                />
+              </div>
+            </section>
+
+            <BlogSection />
+          </main>
+
+          <SiteFooter />
+        </>
       ) : (
-        <PreviewSection
-          thumbnail={thumbnail!}
-          title={title}
-          onBack={handleBack}
-        />
+        <main className="pt-6">
+          <PreviewSection
+            thumbnail={thumbnail!}
+            title={title}
+            onBack={handleBack}
+          />
+        </main>
       )}
     </div>
+  );
+}
+
+function SiteHeader() {
+  return (
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+        <a href="#" className="flex items-center gap-3 font-semibold">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground text-background">
+            <PlaySquare className="h-5 w-5" />
+          </span>
+          ThumbnailChecker
+        </a>
+
+        <nav className="flex items-center gap-1 rounded-lg border border-border bg-background p-1 shadow-sm">
+          <a href="#tool" className="rounded-md px-4 py-2 text-sm hover:bg-muted">
+            Tool
+          </a>
+          <a href="#blog" className="rounded-md px-4 py-2 text-sm hover:bg-muted">
+            Blog
+          </a>
+          <a href="#tool" className="rounded-md bg-foreground px-4 py-2 text-sm text-background">
+            Get started
+          </a>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+function BlogSection() {
+  const posts = [
+    {
+      title: "How to Make a Thumbnail Readable on Mobile",
+      date: "Creator guide",
+      image:
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+      title: "3 Title Patterns That Build Curiosity",
+      date: "CTR strategy",
+      image:
+        "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+      title: "What to Check Before Publishing a Video",
+      date: "Publishing checklist",
+      image:
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+    },
+  ];
+
+  return (
+    <section id="blog" className="mx-auto max-w-7xl px-6 py-16">
+      <div className="mb-8 flex items-center gap-3">
+        <BookOpen className="h-6 w-6 text-accent" />
+        <h2 className="text-3xl font-bold">Creator Resources</h2>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-3">
+        {posts.map((post) => (
+          <article key={post.title} className="overflow-hidden rounded-lg border border-border bg-background shadow-sm">
+            <img src={post.image} alt="" className="aspect-[16/10] w-full object-cover grayscale" />
+            <div className="space-y-3 p-5">
+              <h3 className="text-xl font-semibold leading-snug">{post.title}</h3>
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>{post.date}</span>
+                <span>Read &gt;</span>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SiteFooter() {
+  return (
+    <footer className="bg-[#18191c] px-6 py-14 text-white">
+      <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 font-semibold">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-[#18191c]">
+              <PlaySquare className="h-5 w-5" />
+            </span>
+            ThumbnailChecker
+          </div>
+          <p className="max-w-sm text-sm leading-6 text-white/70">
+            Thumbnail, title, and clickability testing for YouTube creators.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="font-semibold">Product</h3>
+          <a href="#tool" className="block text-sm text-white/70 hover:text-white">Preview tool</a>
+          <a href="#blog" className="block text-sm text-white/70 hover:text-white">Blog</a>
+          <a href="#tool" className="block text-sm text-white/70 hover:text-white">AI coach</a>
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="font-semibold">Creator Tools</h3>
+          <a href="#tool" className="block text-sm text-white/70 hover:text-white">CTR prediction</a>
+          <a href="#tool" className="block text-sm text-white/70 hover:text-white">Mobile preview</a>
+          <a href="#tool" className="block text-sm text-white/70 hover:text-white">Thumbnail checklist</a>
+        </div>
+      </div>
+    </footer>
   );
 }

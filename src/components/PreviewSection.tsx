@@ -1,4 +1,4 @@
-import { ArrowLeft, Monitor, Smartphone, Tv, Globe } from "lucide-react";
+import { ArrowLeft, Monitor, Smartphone, Tv } from "lucide-react";
 import { DesktopHome } from "./previews/DesktopHome";
 import { DesktopSearch } from "./previews/DesktopSearch";
 import { WatchNextSidebar } from "./previews/WatchNextSidebar";
@@ -24,15 +24,15 @@ export function PreviewSection({ thumbnail, title, onBack }: PreviewSectionProps
           Back to Upload
         </button>
 
-        <div className="mb-8">
+        <div className="mb-8 max-w-3xl">
           <h2 className="text-3xl font-bold mb-2">Platform Previews</h2>
           <p className="text-muted-foreground">
             See how your thumbnail and title appear across YouTube
           </p>
         </div>
 
-        <div className="space-y-12">
-          <section>
+        <div className="space-y-8">
+          <section className="rounded-lg bg-muted/60 p-6 md:p-8">
             <div className="flex items-center gap-2 mb-4">
               <Monitor className="w-5 h-5 text-accent" />
               <h3 className="text-xl font-semibold">Desktop Home Feed</h3>
@@ -40,7 +40,7 @@ export function PreviewSection({ thumbnail, title, onBack }: PreviewSectionProps
             <DesktopHome thumbnail={thumbnail} title={title} />
           </section>
 
-          <section>
+          <section className="rounded-lg bg-muted/60 p-6 md:p-8">
             <div className="flex items-center gap-2 mb-4">
               <Monitor className="w-5 h-5 text-accent" />
               <h3 className="text-xl font-semibold">Desktop Search Results</h3>
@@ -48,7 +48,7 @@ export function PreviewSection({ thumbnail, title, onBack }: PreviewSectionProps
             <DesktopSearch thumbnail={thumbnail} title={title} />
           </section>
 
-          <section>
+          <section className="rounded-lg bg-muted/60 p-6 md:p-8">
             <div className="flex items-center gap-2 mb-4">
               <Monitor className="w-5 h-5 text-accent" />
               <h3 className="text-xl font-semibold">Watch Next Sidebar</h3>
@@ -56,7 +56,7 @@ export function PreviewSection({ thumbnail, title, onBack }: PreviewSectionProps
             <WatchNextSidebar thumbnail={thumbnail} title={title} />
           </section>
 
-          <section>
+          <section className="rounded-lg bg-muted/60 p-6 md:p-8">
             <div className="flex items-center gap-2 mb-4">
               <Smartphone className="w-5 h-5 text-accent" />
               <h3 className="text-xl font-semibold">Mobile App - Home</h3>
@@ -64,7 +64,7 @@ export function PreviewSection({ thumbnail, title, onBack }: PreviewSectionProps
             <MobileHome thumbnail={thumbnail} title={title} />
           </section>
 
-          <section>
+          <section className="rounded-lg bg-muted/60 p-6 md:p-8">
             <div className="flex items-center gap-2 mb-4">
               <Smartphone className="w-5 h-5 text-accent" />
               <h3 className="text-xl font-semibold">Mobile App - Search</h3>
@@ -72,7 +72,7 @@ export function PreviewSection({ thumbnail, title, onBack }: PreviewSectionProps
             <MobileSearch thumbnail={thumbnail} title={title} />
           </section>
 
-          <section>
+          <section className="rounded-lg bg-muted/60 p-6 md:p-8">
             <div className="flex items-center gap-2 mb-4">
               <Tv className="w-5 h-5 text-accent" />
               <h3 className="text-xl font-semibold">YouTube TV</h3>

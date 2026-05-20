@@ -98,15 +98,17 @@ export function UploadSection({
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold">ThumbnailChecker</h1>
-        <p className="text-muted-foreground">
-          Preview your YouTube thumbnail across all platforms before you publish
-        </p>
-      </div>
-
+    <div className="mx-auto w-full max-w-6xl space-y-8">
       <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold">
+            Step 1: Upload your thumbnail and title
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            ThumbnailChecker will save the check, predict CTR, and open YouTube-style previews.
+          </p>
+        </div>
+
         <div>
           <label className="block mb-2">Upload Thumbnail</label>
           <div className="relative">
@@ -119,7 +121,7 @@ export function UploadSection({
             />
             <label
               htmlFor="thumbnail-upload"
-              className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
+              className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-border rounded-lg cursor-pointer bg-background hover:bg-accent/50 transition-colors"
             >
               {thumbnail ? (
                 <img
@@ -162,7 +164,7 @@ export function UploadSection({
         <button
           onClick={onPreview}
           disabled={!thumbnail || !title || isSaving || isAnalyzing}
-          className="w-full py-3 px-6 bg-accent text-accent-foreground rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 px-6 bg-foreground text-background rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSaving || isAnalyzing ? "Analyzing and Saving..." : "Save, Analyze & Preview"}
         </button>
