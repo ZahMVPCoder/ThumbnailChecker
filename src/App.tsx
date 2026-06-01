@@ -414,18 +414,21 @@ function BlogSection() {
     {
       title: "How to Make a Thumbnail Readable on Mobile",
       date: "Creator guide",
+      url: "https://www.clickstudio.co/blog/youtube-thumbnail-design-guide",
       image:
         "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "3 Title Patterns That Build Curiosity",
       date: "CTR strategy",
+      url: "https://support.google.com/youtube/answer/12340300?hl=en",
       image:
         "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "What to Check Before Publishing a Video",
       date: "Publishing checklist",
+      url: "https://thumbnailcreator.ai/blog/youtube-thumbnail-best-practices",
       image:
         "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
     },
@@ -446,7 +449,14 @@ function BlogSection() {
               <h3 className="text-xl font-semibold leading-snug">{post.title}</h3>
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>{post.date}</span>
-                <span>Read &gt;</span>
+                <a
+                  href={post.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-foreground transition-colors hover:text-accent"
+                >
+                  Read &gt;
+                </a>
               </div>
             </div>
           </article>
