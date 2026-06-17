@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BookOpen, Eye, Layers, LineChart, PlaySquare, Sparkles, Type } from "lucide-react";
+import { ArrowUpRight, BookOpen, Eye, Layers, LineChart, PlaySquare, Sparkles, Type } from "lucide-react";
 import { UploadSection } from "./components/UploadSection";
 import { PreviewSection } from "./components/PreviewSection";
 import { ThemeToggle } from "./components/ThemeToggle";
@@ -564,54 +564,62 @@ function BlogSection() {
   const posts = [
     {
       title: "How to Make a Thumbnail Readable on Mobile",
-      date: "Creator guide",
+      category: "Creator guide",
+      body: "A practical guide to checking whether text, faces, contrast, and layout still work when the thumbnail is small.",
       url: "https://www.clickstudio.co/blog/youtube-thumbnail-design-guide",
-      image:
-        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "3 Title Patterns That Build Curiosity",
-      date: "CTR strategy",
+      category: "CTR strategy",
+      body: "Title frameworks that pair well with thumbnails by creating a clear promise, tension, or unanswered question.",
       url: "https://support.google.com/youtube/answer/12340300?hl=en",
-      image:
-        "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80",
     },
     {
       title: "What to Check Before Publishing a Video",
-      date: "Publishing checklist",
+      category: "Publishing checklist",
+      body: "A final pass for title, thumbnail, metadata, and mobile visibility before sending a video live.",
       url: "https://thumbnailcreator.ai/blog/youtube-thumbnail-best-practices",
-      image:
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
     },
   ];
 
   return (
-    <section id="blog" className="mx-auto max-w-7xl px-6 py-16">
-      <div className="mb-8 flex items-center gap-3">
-        <BookOpen className="h-6 w-6 text-accent" />
-        <h2 className="text-3xl font-bold">Creator Resources</h2>
-      </div>
+    <section id="blog" className="border-t border-border bg-muted/35 px-6 py-16">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 max-w-3xl space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-sm text-muted-foreground">
+            <BookOpen className="h-4 w-4 text-accent" />
+            Creator resources
+          </div>
+          <h2 className="text-3xl font-bold leading-tight">Learn, then test inside the tool.</h2>
+          <p className="text-base leading-7 text-muted-foreground">
+            These references support the same workflow as ThumbnailChecker: make the idea clear, preview it small, and publish with stronger metadata.
+          </p>
+        </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        {posts.map((post) => (
-          <article key={post.title} className="overflow-hidden rounded-lg border border-border bg-background shadow-sm">
-            <img src={post.image} alt="" className="aspect-[16/10] w-full object-cover grayscale" />
-            <div className="space-y-3 p-5">
-              <h3 className="text-xl font-semibold leading-snug">{post.title}</h3>
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span>{post.date}</span>
+        <div className="grid gap-4 md:grid-cols-3">
+          {posts.map((post) => (
+            <article key={post.title} className="flex h-full flex-col justify-between rounded-lg border border-border bg-background p-5">
+              <div className="space-y-3">
+                <span className="inline-flex w-fit rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                  {post.category}
+                </span>
+                <h3 className="text-lg font-semibold leading-snug">{post.title}</h3>
+                <p className="text-sm leading-6 text-muted-foreground">{post.body}</p>
+              </div>
+              <div className="mt-5 border-t border-border pt-4">
                 <a
                   href={post.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-medium text-foreground transition-colors hover:text-accent"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-accent"
                 >
-                  Read &gt;
+                  Read resource
+                  <ArrowUpRight className="h-4 w-4" />
                 </a>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
