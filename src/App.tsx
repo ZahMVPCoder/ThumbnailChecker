@@ -35,12 +35,6 @@ interface ThumbnailChecklistItem {
   helper: string;
 }
 
-interface YouTubePublishStatus {
-  configured: boolean;
-  requiredScopes: string[];
-  missing: string[];
-}
-
 const deviceIdStorageKey = "thumbnailchecker-device-id";
 
 function getDeviceId() {
@@ -124,7 +118,6 @@ export default function App() {
   const [audience, setAudience] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [submissions, setSubmissions] = useState<ThumbnailSubmission[]>([]);
-  const [youtubeStatus, setYoutubeStatus] = useState<YouTubePublishStatus | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [updatingSubmissionId, setUpdatingSubmissionId] = useState<number | null>(null);
@@ -158,31 +151,6 @@ export default function App() {
 
     loadSubmissions();
   }, [deviceId]);
-
-  useEffect(() => {
-    const loadYouTubeStatus = async () => {
-      try {
-        const response = await fetch("/api/youtube-publish-status");
-
-        if (!response.ok) {
-          throw new Error("Unable to load YouTube API status.");
-        }
-
-        setYoutubeStatus((await response.json()) as YouTubePublishStatus);
-      } catch {
-        setYoutubeStatus({
-          configured: false,
-          requiredScopes: [
-            "https://www.googleapis.com/auth/youtube.upload",
-            "https://www.googleapis.com/auth/youtube.force-ssl",
-          ],
-          missing: ["YouTube API status unavailable"],
-        });
-      }
-    };
-
-    loadYouTubeStatus();
-  }, []);
 
   const handleThumbnailChange = (file: File) => {
     const reader = new FileReader();
@@ -418,7 +386,6 @@ export default function App() {
                   persona={persona}
                   audience={audience}
                   submissions={submissions}
-                  youtubeStatus={youtubeStatus}
                   isSaving={isSaving}
                   isAnalyzing={isAnalyzing}
                   updatingSubmissionId={updatingSubmissionId}

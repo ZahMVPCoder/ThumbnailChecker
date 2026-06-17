@@ -1,4 +1,4 @@
-import { Check, Clipboard, Lightbulb, Pencil, Send, Target, Trash2, Upload, UserRound, Users, X } from "lucide-react";
+import { Check, Lightbulb, Pencil, Send, Target, Trash2, Upload, UserRound, Users, X } from "lucide-react";
 import { useState } from "react";
 
 interface ThumbnailCoachFeedback {
@@ -40,7 +40,6 @@ interface UploadSectionProps {
     checklist?: ThumbnailChecklistItem[] | null;
     createdAt: string;
   }[];
-  youtubeStatus: YouTubePublishStatus | null;
   isSaving: boolean;
   isAnalyzing: boolean;
   updatingSubmissionId: number | null;
@@ -66,7 +65,6 @@ export function UploadSection({
   persona,
   audience,
   submissions,
-  youtubeStatus,
   isSaving,
   isAnalyzing,
   updatingSubmissionId,
@@ -87,7 +85,6 @@ export function UploadSection({
 }: UploadSectionProps) {
   const [editingSubmissionId, setEditingSubmissionId] = useState<number | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
-  const [publishPackageCopied, setPublishPackageCopied] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -116,30 +113,6 @@ export function UploadSection({
     if (window.confirm("Clear all saved thumbnail checks for this device?")) {
       onClearSubmissions();
     }
-  };
-
-  const publishPackage = {
-    snippet: {
-      title: title.trim(),
-      description: `Creator persona: ${persona.trim() || "General YouTube creator"}\nTarget audience: ${audience.trim() || "General YouTube viewers"}`,
-      tags: [
-        persona.trim(),
-        audience.trim(),
-        "thumbnail-tested",
-        "ThumbnailChecker",
-      ].filter(Boolean),
-      categoryId: "22",
-    },
-    status: {
-      privacyStatus: "private",
-      selfDeclaredMadeForKids: false,
-    },
-  };
-
-  const copyPublishPackage = async () => {
-    await navigator.clipboard.writeText(JSON.stringify(publishPackage, null, 2));
-    setPublishPackageCopied(true);
-    window.setTimeout(() => setPublishPackageCopied(false), 1800);
   };
 
   return (
@@ -301,52 +274,6 @@ export function UploadSection({
           <FeedbackList title="Thumbnail Text Suggestions" items={coachFeedback.thumbnailTextSuggestions} />
         </section>
       ) : null}
-
-      <section className="space-y-3">
-        <div>
-          <h2 className="text-xl font-semibold">YouTube Publish Package</h2>
-          <p className="text-sm text-muted-foreground">
-            Metadata shaped for the YouTube Data API after OAuth is connected
-          </p>
-        </div>
-
-        <div className="grid gap-4 rounded-lg border border-border p-4 lg:grid-cols-[1fr_auto]">
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-2 text-sm">
-              <span
-                className={`rounded-md px-2.5 py-1 ${
-                  youtubeStatus?.configured
-                    ? "bg-accent text-accent-foreground"
-                    : "bg-muted text-muted-foreground"
-                }`}
-              >
-                {youtubeStatus?.configured ? "YouTube API configured" : "OAuth setup needed"}
-              </span>
-              {(youtubeStatus?.missing ?? []).map((item) => (
-                <span key={item} className="rounded-md bg-muted px-2.5 py-1 text-muted-foreground">
-                  Missing: {item}
-                </span>
-              ))}
-            </div>
-            <div className="rounded-md bg-muted p-3 text-xs leading-5 text-muted-foreground">
-              <div>Title: {publishPackage.snippet.title || "Add a video title"}</div>
-              <div>Audience: {audience.trim() || "General YouTube viewers"}</div>
-              <div>Persona: {persona.trim() || "General YouTube creator"}</div>
-              <div>Default privacy: private</div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={copyPublishPackage}
-            disabled={!title.trim()}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border px-4 text-sm font-medium hover:bg-accent/50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Clipboard className="h-4 w-4" />
-            {publishPackageCopied ? "Copied" : "Copy API Payload"}
-          </button>
-        </div>
-      </section>
 
       <section className="space-y-3">
         <div>
