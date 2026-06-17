@@ -54,6 +54,7 @@ interface UploadSectionProps {
   onPersonaChange: (persona: string) => void;
   onAudienceChange: (audience: string) => void;
   onPreview: () => void;
+  onShowPreview: () => void;
   onUpdateSubmission: (id: number, title: string) => void;
   onDeleteSubmission: (id: number) => void;
   onClearSubmissions: () => void;
@@ -79,6 +80,7 @@ export function UploadSection({
   onPersonaChange,
   onAudienceChange,
   onPreview,
+  onShowPreview,
   onUpdateSubmission,
   onDeleteSubmission,
   onClearSubmissions,
@@ -236,14 +238,25 @@ export function UploadSection({
           </div>
         </div>
 
-        <button
-          onClick={onPreview}
-          disabled={!thumbnail || !title || isSaving || isAnalyzing}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-foreground px-6 py-3 font-medium text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-        >
-          <Send className="h-4 w-4" />
-          {isSaving || isAnalyzing ? "Analyzing and Saving..." : "Save, Analyze & Preview"}
-        </button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button
+            onClick={onPreview}
+            disabled={!thumbnail || !title || isSaving || isAnalyzing}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-foreground px-6 py-3 font-medium text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          >
+            <Send className="h-4 w-4" />
+            {isSaving || isAnalyzing ? "Analyzing and Saving..." : "Save, Analyze & Preview"}
+          </button>
+
+          <button
+            type="button"
+            onClick={onShowPreview}
+            disabled={!thumbnail || !title}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-background px-6 py-3 font-medium text-foreground transition-colors hover:bg-muted/70 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          >
+            Back to Preview
+          </button>
+        </div>
 
         {error ? (
           <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">

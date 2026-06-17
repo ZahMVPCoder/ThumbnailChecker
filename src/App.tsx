@@ -283,6 +283,12 @@ export default function App() {
     setShowPreview(false);
   };
 
+  const handleShowPreview = () => {
+    if (thumbnail && title) {
+      setShowPreview(true);
+    }
+  };
+
   const handleUpdateSubmission = async (id: number, nextTitle: string) => {
     if (updatingSubmissionId !== null) {
       return;
@@ -426,6 +432,7 @@ export default function App() {
                   onPersonaChange={handlePersonaChange}
                   onAudienceChange={handleAudienceChange}
                   onPreview={handlePreview}
+                  onShowPreview={handleShowPreview}
                   onUpdateSubmission={handleUpdateSubmission}
                   onDeleteSubmission={handleDeleteSubmission}
                   onClearSubmissions={handleClearSubmissions}
