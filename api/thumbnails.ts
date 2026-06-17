@@ -4,6 +4,8 @@ const prisma = new PrismaClient();
 
 function getOptionalSavedData(body: any) {
   return {
+    ...(typeof body.persona === "string" ? { persona: body.persona.trim() || null } : {}),
+    ...(typeof body.audience === "string" ? { audience: body.audience.trim() || null } : {}),
     ...(typeof body.aiScore === "number" ? { aiScore: body.aiScore } : {}),
     ...(body.aiFeedback ? { aiFeedback: body.aiFeedback } : {}),
     ...(body.checklist ? { checklist: body.checklist } : {}),
@@ -91,6 +93,8 @@ export default async function handler(req: any, res: any) {
     const data: {
       title?: string;
       thumbnail?: string;
+      persona?: string | null;
+      audience?: string | null;
       aiScore?: number;
       aiFeedback?: any;
       checklist?: any;

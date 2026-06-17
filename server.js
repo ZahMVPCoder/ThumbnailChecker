@@ -32,7 +32,7 @@ const maxAnalysesPerWindow = 5;
 const analysisRateLimits = new Map();
 
 const coachPrompt =
-  "You are an expert YouTube strategist and thumbnail coach. Analyze this video thumbnail and title as if the creator wants maximum CTR from Browse/Home traffic. Give direct, honest, practical advice. Focus on whether the thumbnail is readable at small size, whether the title creates curiosity, whether the idea is clickable, and what should be changed. Do not be generic.";
+  "You are an expert YouTube strategist and thumbnail coach. Analyze this video thumbnail and title as if the creator wants maximum CTR from Browse/Home traffic. Give direct, honest, practical advice. Focus on whether the thumbnail is readable at small size, whether the title creates curiosity, whether the idea is clickable for the stated creator persona and target audience, and what should be changed. Do not be generic.";
 
 const thumbnailCoachSchema = {
   type: "OBJECT",
@@ -93,6 +93,8 @@ async function ensureDevice(deviceId) {
 
 function getOptionalSavedData(body) {
   return {
+    ...(typeof body.persona === "string" ? { persona: body.persona.trim() || null } : {}),
+    ...(typeof body.audience === "string" ? { audience: body.audience.trim() || null } : {}),
     ...(typeof body.aiScore === "number" ? { aiScore: body.aiScore } : {}),
     ...(body.aiFeedback ? { aiFeedback: body.aiFeedback } : {}),
     ...(body.checklist ? { checklist: body.checklist } : {}),
@@ -313,7 +315,7 @@ app.delete("/api/thumbnails", async (req, res) => {
 });
 
 app.post("/api/analyze-thumbnail", async (req, res) => {
-  const { deviceId, title, thumbnail } = req.body;
+  const { audience, deviceId, persona, title, thumbnail } = req.body;
 
   if (typeof deviceId !== "string" || deviceId.trim().length === 0) {
     return res.status(400).json({ error: "A device ID is required." });
@@ -340,6 +342,14 @@ app.post("/api/analyze-thumbnail", async (req, res) => {
   }
 
   const image = parseDataUrl(thumbnail);
+  const personaLine =
+    typeof persona === "string" && persona.trim().length > 0
+      ? persona.trim()
+      : "General YouTube creator";
+  const audienceLine =
+    typeof audience === "string" && audience.trim().length > 0
+      ? audience.trim()
+      : "General YouTube viewers";
 
   try {
     const geminiResponse = await fetch(
@@ -356,7 +366,7 @@ app.post("/api/analyze-thumbnail", async (req, res) => {
               role: "user",
               parts: [
                 {
-                  text: `${coachPrompt}\n\nVideo title: ${title.trim()}`,
+                  text: `${coachPrompt}\n\nCreator persona: ${personaLine}\nTarget audience: ${audienceLine}\nVideo title: ${title.trim()}`,
                 },
                 {
                   inlineData: {
@@ -390,6 +400,25 @@ app.post("/api/analyze-thumbnail", async (req, res) => {
       error: "Unable to analyze this thumbnail with Gemini right now.",
     });
   }
+});
+
+app.get("/api/youtube-publish-status", (_req, res) => {
+  const hasClientId = Boolean(process.env.YOUTUBE_CLIENT_ID);
+  const hasClientSecret = Boolean(process.env.YOUTUBE_CLIENT_SECRET);
+  const hasRedirectUri = Boolean(process.env.YOUTUBE_REDIRECT_URI);
+
+  res.json({
+    configured: hasClientId && hasClientSecret && hasRedirectUri,
+    requiredScopes: [
+      "https://www.googleapis.com/auth/youtube.upload",
+      "https://www.googleapis.com/auth/youtube.force-ssl",
+    ],
+    missing: [
+      ...(!hasClientId ? ["YOUTUBE_CLIENT_ID"] : []),
+      ...(!hasClientSecret ? ["YOUTUBE_CLIENT_SECRET"] : []),
+      ...(!hasRedirectUri ? ["YOUTUBE_REDIRECT_URI"] : []),
+    ],
+  });
 });
 
 app.use(express.static(path.join(__dirname, "dist")));

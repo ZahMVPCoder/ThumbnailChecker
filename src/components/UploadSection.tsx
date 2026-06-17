@@ -1,4 +1,4 @@
-import { Check, Lightbulb, Pencil, Target, Trash2, Upload, X } from "lucide-react";
+import { Check, Clipboard, Lightbulb, Pencil, Send, Target, Trash2, Upload, UserRound, Users, X } from "lucide-react";
 import { useState } from "react";
 
 interface ThumbnailCoachFeedback {
@@ -19,17 +19,28 @@ interface ThumbnailChecklistItem {
   helper: string;
 }
 
+interface YouTubePublishStatus {
+  configured: boolean;
+  requiredScopes: string[];
+  missing: string[];
+}
+
 interface UploadSectionProps {
   thumbnail: string | null;
   title: string;
+  persona: string;
+  audience: string;
   submissions: {
     id: number;
     title: string;
     thumbnail: string;
+    persona?: string | null;
+    audience?: string | null;
     aiScore?: number | null;
     checklist?: ThumbnailChecklistItem[] | null;
     createdAt: string;
   }[];
+  youtubeStatus: YouTubePublishStatus | null;
   isSaving: boolean;
   isAnalyzing: boolean;
   updatingSubmissionId: number | null;
@@ -40,6 +51,8 @@ interface UploadSectionProps {
   error: string;
   onThumbnailChange: (file: File) => void;
   onTitleChange: (title: string) => void;
+  onPersonaChange: (persona: string) => void;
+  onAudienceChange: (audience: string) => void;
   onPreview: () => void;
   onUpdateSubmission: (id: number, title: string) => void;
   onDeleteSubmission: (id: number) => void;
@@ -49,7 +62,10 @@ interface UploadSectionProps {
 export function UploadSection({
   thumbnail,
   title,
+  persona,
+  audience,
   submissions,
+  youtubeStatus,
   isSaving,
   isAnalyzing,
   updatingSubmissionId,
@@ -60,6 +76,8 @@ export function UploadSection({
   error,
   onThumbnailChange,
   onTitleChange,
+  onPersonaChange,
+  onAudienceChange,
   onPreview,
   onUpdateSubmission,
   onDeleteSubmission,
@@ -67,6 +85,7 @@ export function UploadSection({
 }: UploadSectionProps) {
   const [editingSubmissionId, setEditingSubmissionId] = useState<number | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
+  const [publishPackageCopied, setPublishPackageCopied] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -95,6 +114,30 @@ export function UploadSection({
     if (window.confirm("Clear all saved thumbnail checks for this device?")) {
       onClearSubmissions();
     }
+  };
+
+  const publishPackage = {
+    snippet: {
+      title: title.trim(),
+      description: `Creator persona: ${persona.trim() || "General YouTube creator"}\nTarget audience: ${audience.trim() || "General YouTube viewers"}`,
+      tags: [
+        persona.trim(),
+        audience.trim(),
+        "thumbnail-tested",
+        "ThumbnailChecker",
+      ].filter(Boolean),
+      categoryId: "22",
+    },
+    status: {
+      privacyStatus: "private",
+      selfDeclaredMadeForKids: false,
+    },
+  };
+
+  const copyPublishPackage = async () => {
+    await navigator.clipboard.writeText(JSON.stringify(publishPackage, null, 2));
+    setPublishPackageCopied(true);
+    window.setTimeout(() => setPublishPackageCopied(false), 1800);
   };
 
   return (
@@ -161,11 +204,44 @@ export function UploadSection({
           </div>
         </div>
 
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label htmlFor="persona" className="mb-2 flex items-center gap-2">
+              <UserRound className="h-4 w-4 text-accent" />
+              Creator Persona
+            </label>
+            <input
+              type="text"
+              id="persona"
+              value={persona}
+              onChange={(e) => onPersonaChange(e.target.value)}
+              placeholder="Example: budget tech reviewer"
+              className="w-full rounded-lg border border-border bg-input-background px-4 py-3 text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-accent"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="audience" className="mb-2 flex items-center gap-2">
+              <Users className="h-4 w-4 text-accent" />
+              Target Audience
+            </label>
+            <input
+              type="text"
+              id="audience"
+              value={audience}
+              onChange={(e) => onAudienceChange(e.target.value)}
+              placeholder="Example: students buying first laptops"
+              className="w-full rounded-lg border border-border bg-input-background px-4 py-3 text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-accent"
+            />
+          </div>
+        </div>
+
         <button
           onClick={onPreview}
           disabled={!thumbnail || !title || isSaving || isAnalyzing}
-          className="w-full py-3 px-6 bg-foreground text-background rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-foreground px-6 py-3 font-medium text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
+          <Send className="h-4 w-4" />
           {isSaving || isAnalyzing ? "Analyzing and Saving..." : "Save, Analyze & Preview"}
         </button>
 
@@ -212,6 +288,52 @@ export function UploadSection({
           <FeedbackList title="Thumbnail Text Suggestions" items={coachFeedback.thumbnailTextSuggestions} />
         </section>
       ) : null}
+
+      <section className="space-y-3">
+        <div>
+          <h2 className="text-xl font-semibold">YouTube Publish Package</h2>
+          <p className="text-sm text-muted-foreground">
+            Metadata shaped for the YouTube Data API after OAuth is connected
+          </p>
+        </div>
+
+        <div className="grid gap-4 rounded-lg border border-border p-4 lg:grid-cols-[1fr_auto]">
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2 text-sm">
+              <span
+                className={`rounded-md px-2.5 py-1 ${
+                  youtubeStatus?.configured
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {youtubeStatus?.configured ? "YouTube API configured" : "OAuth setup needed"}
+              </span>
+              {(youtubeStatus?.missing ?? []).map((item) => (
+                <span key={item} className="rounded-md bg-muted px-2.5 py-1 text-muted-foreground">
+                  Missing: {item}
+                </span>
+              ))}
+            </div>
+            <div className="rounded-md bg-muted p-3 text-xs leading-5 text-muted-foreground">
+              <div>Title: {publishPackage.snippet.title || "Add a video title"}</div>
+              <div>Audience: {audience.trim() || "General YouTube viewers"}</div>
+              <div>Persona: {persona.trim() || "General YouTube creator"}</div>
+              <div>Default privacy: private</div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={copyPublishPackage}
+            disabled={!title.trim()}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border px-4 text-sm font-medium hover:bg-accent/50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Clipboard className="h-4 w-4" />
+            {publishPackageCopied ? "Copied" : "Copy API Payload"}
+          </button>
+        </div>
+      </section>
 
       <section className="space-y-3">
         <div>
@@ -306,6 +428,13 @@ export function UploadSection({
                     <p className="text-xs text-muted-foreground">
                       Checklist: {submission.checklist.filter((item) => item.passed).length}/
                       {submission.checklist.length} complete
+                    </p>
+                  ) : null}
+                  {(submission.persona || submission.audience) ? (
+                    <p className="text-xs text-muted-foreground">
+                      {submission.persona ? `Persona: ${submission.persona}` : ""}
+                      {submission.persona && submission.audience ? " | " : ""}
+                      {submission.audience ? `Audience: ${submission.audience}` : ""}
                     </p>
                   ) : null}
                 </div>

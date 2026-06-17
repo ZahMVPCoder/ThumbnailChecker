@@ -4,7 +4,7 @@ const maxAnalysesPerWindow = 5;
 const analysisRateLimits = new Map<string, { count: number; resetAt: number }>();
 
 const coachPrompt =
-  "You are an expert YouTube strategist and thumbnail coach. Analyze this video thumbnail and title as if the creator wants maximum CTR from Browse/Home traffic. Give direct, honest, practical advice. Focus on whether the thumbnail is readable at small size, whether the title creates curiosity, whether the idea is clickable, and what should be changed. Do not be generic.";
+  "You are an expert YouTube strategist and thumbnail coach. Analyze this video thumbnail and title as if the creator wants maximum CTR from Browse/Home traffic. Give direct, honest, practical advice. Focus on whether the thumbnail is readable at small size, whether the title creates curiosity, whether the idea is clickable for the stated creator persona and target audience, and what should be changed. Do not be generic.";
 
 const thumbnailCoachSchema = {
   type: "OBJECT",
@@ -109,7 +109,7 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: "Method not allowed." });
   }
 
-  const { deviceId, title, thumbnail } = req.body;
+  const { audience, deviceId, persona, title, thumbnail } = req.body;
 
   if (typeof deviceId !== "string" || deviceId.trim().length === 0) {
     return res.status(400).json({ error: "A device ID is required." });
@@ -136,6 +136,14 @@ export default async function handler(req: any, res: any) {
   }
 
   const image = parseDataUrl(thumbnail);
+  const personaLine =
+    typeof persona === "string" && persona.trim().length > 0
+      ? persona.trim()
+      : "General YouTube creator";
+  const audienceLine =
+    typeof audience === "string" && audience.trim().length > 0
+      ? audience.trim()
+      : "General YouTube viewers";
 
   try {
     const geminiResponse = await fetch(
@@ -152,7 +160,7 @@ export default async function handler(req: any, res: any) {
               role: "user",
               parts: [
                 {
-                  text: `${coachPrompt}\n\nVideo title: ${title.trim()}`,
+                  text: `${coachPrompt}\n\nCreator persona: ${personaLine}\nTarget audience: ${audienceLine}\nVideo title: ${title.trim()}`,
                 },
                 {
                   inlineData: {

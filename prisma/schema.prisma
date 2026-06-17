@@ -13,6 +13,8 @@ model ThumbnailSubmission {
   device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
   title     String
   thumbnail String   @db.Text
+  persona   String?
+  audience  String?
   aiScore   Float?
   aiFeedback Json?
   checklist Json?

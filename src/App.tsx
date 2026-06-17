@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BookOpen, LineChart, PlaySquare } from "lucide-react";
+import { BookOpen, Eye, Layers, LineChart, PlaySquare, Sparkles, Type } from "lucide-react";
 import { UploadSection } from "./components/UploadSection";
 import { PreviewSection } from "./components/PreviewSection";
 import { ThemeToggle } from "./components/ThemeToggle";
@@ -9,6 +9,8 @@ interface ThumbnailSubmission {
   deviceId: string;
   title: string;
   thumbnail: string;
+  persona?: string | null;
+  audience?: string | null;
   aiScore?: number | null;
   aiFeedback?: ThumbnailCoachFeedback | null;
   checklist?: ThumbnailChecklistItem[] | null;
@@ -33,6 +35,12 @@ interface ThumbnailChecklistItem {
   helper: string;
 }
 
+interface YouTubePublishStatus {
+  configured: boolean;
+  requiredScopes: string[];
+  missing: string[];
+}
+
 const deviceIdStorageKey = "thumbnailchecker-device-id";
 
 function getDeviceId() {
@@ -50,6 +58,8 @@ function getDeviceId() {
 function createThumbnailChecklist(
   title: string,
   thumbnail: string | null,
+  persona: string,
+  audience: string,
   feedback: ThumbnailCoachFeedback | null,
 ): ThumbnailChecklistItem[] {
   const trimmedTitle = title.trim();
@@ -75,6 +85,18 @@ function createThumbnailChecklist(
       helper: "Aim for a title around 20-70 characters.",
     },
     {
+      id: "persona-added",
+      label: "Creator persona defined",
+      passed: persona.trim().length > 0,
+      helper: "Add the creator angle so feedback matches the channel strategy.",
+    },
+    {
+      id: "audience-added",
+      label: "Audience defined",
+      passed: audience.trim().length > 0,
+      helper: "Name the intended viewers so clickability is judged against the right audience.",
+    },
+    {
       id: "ai-reviewed",
       label: "AI coach reviewed it",
       passed: Boolean(feedback),
@@ -98,8 +120,11 @@ function createThumbnailChecklist(
 export default function App() {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [title, setTitle] = useState("");
+  const [persona, setPersona] = useState("");
+  const [audience, setAudience] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [submissions, setSubmissions] = useState<ThumbnailSubmission[]>([]);
+  const [youtubeStatus, setYoutubeStatus] = useState<YouTubePublishStatus | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [updatingSubmissionId, setUpdatingSubmissionId] = useState<number | null>(null);
@@ -112,8 +137,8 @@ export default function App() {
   const [deviceId] = useState(getDeviceId);
 
   useEffect(() => {
-    setChecklist(createThumbnailChecklist(title, thumbnail, coachFeedback));
-  }, [title, thumbnail, coachFeedback]);
+    setChecklist(createThumbnailChecklist(title, thumbnail, persona, audience, coachFeedback));
+  }, [title, thumbnail, persona, audience, coachFeedback]);
 
   useEffect(() => {
     const loadSubmissions = async () => {
@@ -134,6 +159,31 @@ export default function App() {
     loadSubmissions();
   }, [deviceId]);
 
+  useEffect(() => {
+    const loadYouTubeStatus = async () => {
+      try {
+        const response = await fetch("/api/youtube-publish-status");
+
+        if (!response.ok) {
+          throw new Error("Unable to load YouTube API status.");
+        }
+
+        setYoutubeStatus((await response.json()) as YouTubePublishStatus);
+      } catch {
+        setYoutubeStatus({
+          configured: false,
+          requiredScopes: [
+            "https://www.googleapis.com/auth/youtube.upload",
+            "https://www.googleapis.com/auth/youtube.force-ssl",
+          ],
+          missing: ["YouTube API status unavailable"],
+        });
+      }
+    };
+
+    loadYouTubeStatus();
+  }, []);
+
   const handleThumbnailChange = (file: File) => {
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -146,6 +196,18 @@ export default function App() {
 
   const handleTitleChange = (nextTitle: string) => {
     setTitle(nextTitle);
+    setCoachFeedback(null);
+    setCurrentSubmissionId(null);
+  };
+
+  const handlePersonaChange = (nextPersona: string) => {
+    setPersona(nextPersona);
+    setCoachFeedback(null);
+    setCurrentSubmissionId(null);
+  };
+
+  const handleAudienceChange = (nextAudience: string) => {
+    setAudience(nextAudience);
     setCoachFeedback(null);
     setCurrentSubmissionId(null);
   };
@@ -166,7 +228,7 @@ export default function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ deviceId, title, thumbnail }),
+        body: JSON.stringify({ audience, deviceId, persona, title, thumbnail }),
       });
 
       const analysisData = await analysisResponse.json();
@@ -176,7 +238,7 @@ export default function App() {
       }
 
       const feedback = analysisData as ThumbnailCoachFeedback;
-      const nextChecklist = createThumbnailChecklist(title, thumbnail, feedback);
+      const nextChecklist = createThumbnailChecklist(title, thumbnail, persona, audience, feedback);
 
       setCoachFeedback(feedback);
       setChecklist(nextChecklist);
@@ -190,6 +252,8 @@ export default function App() {
           deviceId,
           title,
           thumbnail,
+          persona,
+          audience,
           aiScore: feedback.overallClickabilityScore,
           aiFeedback: feedback,
           checklist: nextChecklist,
@@ -345,7 +409,10 @@ export default function App() {
                 <UploadSection
                   thumbnail={thumbnail}
                   title={title}
+                  persona={persona}
+                  audience={audience}
                   submissions={submissions}
+                  youtubeStatus={youtubeStatus}
                   isSaving={isSaving}
                   isAnalyzing={isAnalyzing}
                   updatingSubmissionId={updatingSubmissionId}
@@ -356,6 +423,8 @@ export default function App() {
                   error={error}
                   onThumbnailChange={handleThumbnailChange}
                   onTitleChange={handleTitleChange}
+                  onPersonaChange={handlePersonaChange}
+                  onAudienceChange={handleAudienceChange}
                   onPreview={handlePreview}
                   onUpdateSubmission={handleUpdateSubmission}
                   onDeleteSubmission={handleDeleteSubmission}
@@ -364,6 +433,7 @@ export default function App() {
               </div>
             </section>
 
+            <BeginnerGuideSection />
             <BlogSection />
           </main>
 
@@ -397,6 +467,9 @@ function SiteHeader() {
           <a href="#tool" className="rounded-md px-4 py-2 text-sm hover:bg-muted">
             Tool
           </a>
+          <a href="#basics" className="rounded-md px-4 py-2 text-sm hover:bg-muted">
+            Basics
+          </a>
           <a href="#blog" className="rounded-md px-4 py-2 text-sm hover:bg-muted">
             Blog
           </a>
@@ -406,6 +479,84 @@ function SiteHeader() {
         </nav>
       </div>
     </header>
+  );
+}
+
+function BeginnerGuideSection() {
+  const basics = [
+    {
+      title: "Start With One Clear Idea",
+      body: "Pick the single moment, promise, or reaction your video is about. A beginner-friendly thumbnail should make one thing obvious in under a second.",
+      icon: <Sparkles className="h-5 w-5" />,
+    },
+    {
+      title: "Make It Readable Small",
+      body: "Use large shapes, strong contrast, and only a few words. If it works on a phone screen, it will usually work everywhere else.",
+      icon: <Eye className="h-5 w-5" />,
+    },
+    {
+      title: "Keep Text Short",
+      body: "Aim for 2-5 punchy words on the thumbnail. Let the video title explain the detail while the image creates the first click impulse.",
+      icon: <Type className="h-5 w-5" />,
+    },
+    {
+      title: "Build Simple Layers",
+      body: "Use a clear subject, a clean background, and one supporting detail like an arrow, object, or expression. Too many details compete for attention.",
+      icon: <Layers className="h-5 w-5" />,
+    },
+  ];
+
+  const checklist = [
+    "Use a 16:9 canvas, ideally 1280x720.",
+    "Put the main subject close to the center or one side.",
+    "Avoid tiny text, thin fonts, and low-contrast colors.",
+    "Match the title and thumbnail so they tell the same story.",
+    "Preview it on mobile before publishing.",
+  ];
+
+  return (
+    <section id="basics" className="border-y border-border bg-background px-6 py-16">
+      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="space-y-5">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-sm text-muted-foreground">
+            <BookOpen className="h-4 w-4 text-accent" />
+            Beginner thumbnail basics
+          </div>
+          <div className="space-y-3">
+            <h2 className="text-3xl font-bold leading-tight md:text-4xl">
+              New to thumbnails? Start with the fundamentals.
+            </h2>
+            <p className="text-base leading-7 text-muted-foreground">
+              A strong thumbnail does not need to be complicated. Focus on clarity, readable text, and a visual reason for someone to stop scrolling.
+            </p>
+          </div>
+
+          <div className="rounded-lg border border-border bg-muted/50 p-5">
+            <h3 className="mb-3 font-semibold">Quick beginner checklist</h3>
+            <div className="grid gap-2">
+              {checklist.map((item) => (
+                <div key={item} className="flex gap-3 text-sm leading-6">
+                  <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" />
+                  <span className="text-muted-foreground">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {basics.map((tip) => (
+            <article key={tip.title} className="rounded-lg border border-border bg-muted/35 p-5">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-foreground text-background">
+                {tip.icon}
+              </div>
+              <h3 className="mb-2 text-lg font-semibold">{tip.title}</h3>
+              <p className="text-sm leading-6 text-muted-foreground">{tip.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -485,8 +636,8 @@ function SiteFooter() {
         <div className="space-y-3">
           <h3 className="font-semibold">Product</h3>
           <a href="#tool" className="block text-sm text-white/70 hover:text-white">Preview tool</a>
+          <a href="#basics" className="block text-sm text-white/70 hover:text-white">Thumbnail basics</a>
           <a href="#blog" className="block text-sm text-white/70 hover:text-white">Blog</a>
-          <a href="#tool" className="block text-sm text-white/70 hover:text-white">AI coach</a>
         </div>
 
         <div className="space-y-3">
